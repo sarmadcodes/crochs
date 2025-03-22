@@ -1,5 +1,7 @@
-import React, { useEffect, useRef } from "react";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Menu, X, ShoppingCart, Search } from "lucide-react";
+import { SearchBar } from "./SearchBar";
+import { Product } from "../types";
 
 interface HeaderProps {
   activeSection: string;
@@ -8,6 +10,8 @@ interface HeaderProps {
   setMobileMenuOpen: (open: boolean) => void;
   scrolled: boolean;
   getTotalItems: () => number;
+  products: Product[];
+  onSelectProduct: (product: Product) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,8 +21,19 @@ export const Header: React.FC<HeaderProps> = ({
   setMobileMenuOpen,
   scrolled,
   getTotalItems,
+  products,
+  onSelectProduct
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [mobileSearchActive, setMobileSearchActive] = useState(false);
+
+  // Focus input when search becomes active
+  useEffect(() => {
+    if (mobileSearchActive && searchInputRef.current) {
+      setTimeout(() => searchInputRef.current?.focus(), 100);
+    }
+  }, [mobileSearchActive]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -38,16 +53,24 @@ export const Header: React.FC<HeaderProps> = ({
       }`}
     >
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo with Glitter Effect */}
+        {/* Logo with Glitter Effect - conditional size classes */}
         <div
           onClick={() => setActiveSection("home")}
-          className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter"
+          className={`font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 ${
+            mobileSearchActive ? "text-xl md:text-2xl" : "text-2xl"
+          }`}
         >
           uzucrochets
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
+          {/* Search Bar - moved before navigation buttons */}
+          <SearchBar 
+            products={products} 
+            onSelectProduct={onSelectProduct} 
+          />
+          
           {["home", "products"].map((section) => (
             <button
               key={section}
@@ -59,6 +82,7 @@ export const Header: React.FC<HeaderProps> = ({
               {section.charAt(0).toUpperCase() + section.slice(1)}
             </button>
           ))}
+          
           {/* Cart Button */}
           <div className="relative">
             <button
@@ -81,34 +105,72 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center space-x-4">
-          {/* Mobile Cart */}
-          <div className="relative">
+          {/* Mobile Search Toggle/Search Bar */}
+          {mobileSearchActive ? (
+            <div className="flex-grow animate-fadeIn">
+              <SearchBar 
+                products={products} 
+                onSelectProduct={(product) => {
+                  onSelectProduct(product);
+                  setMobileSearchActive(false);
+                }}
+                inputRef={searchInputRef}
+                autoFocus={true}
+              />
+            </div>
+          ) : (
             <button
-              onClick={() => setActiveSection("cart")}
-              className={`${
-                activeSection === "cart"
-                  ? "bg-gradient-to-r from-red-500 to-red-600"
-                  : "bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500"
-              } text-white p-2 rounded-full transition-all transform hover:scale-105 relative`}
+              onClick={() => setMobileSearchActive(true)}
+              className="text-pink-700 p-2"
             >
-              <ShoppingCart size={20} />
-              {getTotalItems() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {getTotalItems()}
-                </span>
-              )}
+              <Search size={20} />
             </button>
-          </div>
-          {/* Mobile Menu Toggle */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setMobileMenuOpen(!mobileMenuOpen);
-            }}
-            className="text-pink-700"
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          )}
+          
+          {/* Close search button when active */}
+          {mobileSearchActive && (
+            <button
+              onClick={() => setMobileSearchActive(false)}
+              className="text-pink-700"
+            >
+              <X size={20} />
+            </button>
+          )}
+          
+          {/* Only show cart and menu when search is not active */}
+          {!mobileSearchActive && (
+            <>
+              {/* Mobile Cart */}
+              <div className="relative">
+                <button
+                  onClick={() => setActiveSection("cart")}
+                  className={`${
+                    activeSection === "cart"
+                      ? "bg-gradient-to-r from-red-500 to-red-600"
+                      : "bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500"
+                  } text-white p-2 rounded-full transition-all transform hover:scale-105 relative`}
+                >
+                  <ShoppingCart size={20} />
+                  {getTotalItems() > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {getTotalItems()}
+                    </span>
+                  )}
+                </button>
+              </div>
+              
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMobileMenuOpen(!mobileMenuOpen);
+                }}
+                className="text-pink-700"
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -156,6 +218,15 @@ export const Header: React.FC<HeaderProps> = ({
               #ff66b2, /* Deep Pink */ 
               #ff3366 /* Bright Red-Pink */
             );
+          }
+
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+
+          .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in-out;
           }
         `}
       </style>
