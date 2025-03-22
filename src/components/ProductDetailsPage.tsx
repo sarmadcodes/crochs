@@ -1,12 +1,17 @@
-import React from 'react';
-import { ArrowLeft, Heart, ShoppingCart } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Heart, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 
+// Extended product type with multiple images
+interface ExtendedProduct extends Product {
+  images?: string[]; // Optional array of image URLs
+}
+
 interface ProductDetailsPageProps {
-  product: Product | null;
+  product: ExtendedProduct | null;
   addToCart: (product: Product) => void;
   goBack: () => void;
-  goToCart: () => void; // New prop to navigate to cart/checkout
+  goToCart: () => void;
 }
 
 export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ 
@@ -15,6 +20,9 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
   goBack,
   goToCart 
 }) => {
+  // State to track the current image index
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   if (!product) {
     return (
       <div className="pt-24 pb-16 min-h-screen">
@@ -31,10 +39,33 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
     );
   }
 
+  // Create an array of images - use the default image if no images array is provided
+  const productImages = product.images && product.images.length > 0 
+    ? product.images 
+    : [product.image];
+
   // Function to handle "Buy Now" action
   const handleBuyNow = () => {
-    addToCart(product); // First add to cart
-    goToCart(); // Then navigate to cart/checkout
+    addToCart(product);
+    goToCart();
+  };
+
+  // Functions to navigate between images
+  const goToPreviousImage = () => {
+    setCurrentImageIndex(prev => 
+      prev === 0 ? productImages.length - 1 : prev - 1
+    );
+  };
+
+  const goToNextImage = () => {
+    setCurrentImageIndex(prev => 
+      prev === productImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  // Function to directly go to a specific image
+  const goToImage = (index: number) => {
+    setCurrentImageIndex(index);
   };
 
   return (
@@ -50,20 +81,77 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="md:flex">
-            {/* Product Image */}
+            {/* Product Image Gallery */}
             <div className="md:w-1/2">
               <div className="h-96 md:h-full overflow-hidden relative">
+                {/* Main image */}
                 <img 
-                  src={product.image} 
-                  alt={product.name} 
+                  src={productImages[currentImageIndex]} 
+                  alt={`${product.name} - View ${currentImageIndex + 1}`} 
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-4 right-4">
-                  <button className="bg-white/80 hover:bg-white p-3 rounded-full text-pink-500 hover:text-red-500 transition-colors">
-                    <Heart size={24} />
-                  </button>
-                </div>
+                
+                {/* Navigation arrows - only show if there are multiple images */}
+                {productImages.length > 1 && (
+                  <>
+                    <button 
+                      onClick={goToPreviousImage}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft size={24} className="text-gray-800" />
+                    </button>
+                    <button 
+                      onClick={goToNextImage}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={24} className="text-gray-800" />
+                    </button>
+                  </>
+                )}
+                
+                {/* Thumbnail navigation */}
+                {productImages.length > 1 && (
+                  <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
+                    {productImages.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToImage(index)}
+                        className={`w-3 h-3 rounded-full transition-all ${
+                          index === currentImageIndex 
+                            ? 'bg-pink-600 scale-110' 
+                            : 'bg-white bg-opacity-70 hover:bg-opacity-100'
+                        }`}
+                        aria-label={`View image ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
+
+              {/* Thumbnail strip */}
+              {productImages.length > 1 && (
+                <div className="flex mt-4 mx-4 overflow-x-auto pb-2">
+                  {productImages.map((img, index) => (
+                    <div 
+                      key={index}
+                      onClick={() => goToImage(index)}
+                      className={`cursor-pointer flex-shrink-0 w-20 h-20 mr-2 rounded-md overflow-hidden border-2 transition-all ${
+                        index === currentImageIndex 
+                          ? 'border-pink-500' 
+                          : 'border-transparent hover:border-pink-300'
+                      }`}
+                    >
+                      <img 
+                        src={img} 
+                        alt={`${product.name} thumbnail ${index + 1}`} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Product Information */}
