@@ -7,6 +7,7 @@ import { ProductsSection } from './sections/ProductsSection';
 import { CartSection } from './sections/CartSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
 import { Product, CartItem } from './types';
+import { products } from './data/products'; // Import products directly
 import './styles/animations.css';
 
 const App: React.FC = () => {
@@ -94,6 +95,8 @@ const App: React.FC = () => {
         setMobileMenuOpen={setMobileMenuOpen}
         scrolled={scrolled}
         getTotalItems={getTotalItems}
+        products={products}
+        onSelectProduct={viewProductDetails}
       />
 
       <main>
