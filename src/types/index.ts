@@ -4,6 +4,7 @@ export interface Product {
   price: number;
   image: string;
   category: string;
+  images?: string[]; // Added this field for multiple images
 }
 
 export interface CartItem extends Product {
