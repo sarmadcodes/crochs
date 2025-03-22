@@ -9,8 +9,8 @@ interface SearchBarProps {
   autoFocus?: boolean;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ 
-  products, 
+export const SearchBar: React.FC<SearchBarProps> = ({
+  products,
   onSelectProduct,
   inputRef,
   autoFocus = false
@@ -47,7 +47,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           <Search size={16} />
         </div>
       </div>
-
+      
       {showResults && filteredProducts.length > 0 && (
         <div className="absolute z-50 mt-1 w-full bg-white rounded-lg shadow-lg max-h-60 overflow-auto">
           {filteredProducts.map((product) => (
@@ -58,10 +58,26 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 setSearchTerm("");
                 setShowResults(false);
               }}
-              className="p-2 hover:bg-pink-50 cursor-pointer border-b border-pink-100 last:border-b-0"
+              className="p-2 hover:bg-pink-50 cursor-pointer border-b border-pink-100 last:border-b-0 flex items-center"
             >
-              <div className="font-medium text-pink-800">{product.name}</div>
-              <div className="text-xs text-pink-600">${product.price.toFixed(2)}</div>
+              {/* Thumbnail image */}
+              <div className="flex-shrink-0 mr-2">
+                {product.image ? (
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-10 h-10 object-cover rounded"
+                  />
+                ) : (
+                  <div className="w-10 h-10 bg-pink-100 rounded flex items-center justify-center">
+                    <span className="text-pink-500 text-xs">No img</span>
+                  </div>
+                )}
+              </div>
+              <div>
+                <div className="font-medium text-pink-800">{product.name}</div>
+                <div className="text-xs text-pink-600">${product.price.toFixed(2)}</div>
+              </div>
             </div>
           ))}
         </div>
