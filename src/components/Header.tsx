@@ -53,11 +53,11 @@ export const Header: React.FC<HeaderProps> = ({
       }`}
     >
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo with Glitter Effect - more responsive size classes */}
+        {/* Logo with Glitter Effect - adjusted mobile size */}
         <div
           onClick={() => setActiveSection("home")}
           className={`font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 ${
-            mobileSearchActive ? "text-sm md:text-xl lg:text-2xl" : "text-lg md:text-xl lg:text-2xl"
+            mobileSearchActive ? "text-lg md:text-xl lg:text-2xl" : "text-xl md:text-xl lg:text-2xl"
           }`}
         >
           uzucrochets
@@ -107,7 +107,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="md:hidden flex items-center space-x-3">
           {/* Mobile Search Toggle/Search Bar */}
           {mobileSearchActive ? (
-            <div className="flex-grow animate-fadeIn w-48">
+            <div className="flex-grow animate-fadeIn w-44">
               <SearchBar 
                 products={products} 
                 onSelectProduct={(product) => {
