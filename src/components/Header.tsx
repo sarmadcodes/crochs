@@ -52,95 +52,65 @@ export const Header: React.FC<HeaderProps> = ({
         scrolled ? "bg-white/90 shadow-md" : "bg-white"
       }`}
     >
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo with Glitter Effect - adjusted mobile size */}
-        <div
-          onClick={() => setActiveSection("home")}
-          className={`font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 ${
-            mobileSearchActive ? "text-lg md:text-xl lg:text-2xl" : "text-xl md:text-xl lg:text-2xl"
-          }`}
-        >
-          uzucrochets
-        </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          {/* Search Bar - moved before navigation buttons */}
+      {/* Mobile Search Bar (Full Width) - Only show when search is active */}
+      {mobileSearchActive && (
+        <div className="md:hidden w-full bg-white py-3 px-4 animate-fadeIn flex items-center">
           <SearchBar 
             products={products} 
-            onSelectProduct={onSelectProduct} 
+            onSelectProduct={(product) => {
+              onSelectProduct(product);
+              setMobileSearchActive(false);
+            }}
+            inputRef={searchInputRef}
+            autoFocus={true}
+            // className="flex-grow"
           />
-          
-          {["home", "products"].map((section) => (
-            <button
-              key={section}
-              onClick={() => setActiveSection(section)}
-              className={`${
-                activeSection === section ? "text-red-500" : "text-pink-700"
-              } hover:text-red-400 font-medium transition`}
-            >
-              {section.charAt(0).toUpperCase() + section.slice(1)}
-            </button>
-          ))}
-          
-          {/* Cart Button */}
-          <div className="relative">
-            <button
-              onClick={() => setActiveSection("cart")}
-              className={`${
-                activeSection === "cart"
-                  ? "bg-gradient-to-r from-red-500 to-red-600"
-                  : "bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500"
-              } text-white p-2 rounded-full transition-all transform hover:scale-105 relative`}
-            >
-              <ShoppingCart size={20} />
-              {getTotalItems() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {getTotalItems()}
-                </span>
-              )}
-            </button>
-          </div>
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center space-x-3">
-          {/* Mobile Search Toggle/Search Bar */}
-          {mobileSearchActive ? (
-            <div className="flex-grow animate-fadeIn w-44">
-              <SearchBar 
-                products={products} 
-                onSelectProduct={(product) => {
-                  onSelectProduct(product);
-                  setMobileSearchActive(false);
+          <button
+            onClick={() => setMobileSearchActive(false)}
+            className="ml-2 text-pink-700"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      )}
+      
+      {/* Only show the main header when search is not active on mobile */}
+      {(!mobileSearchActive || window.innerWidth >= 768) && (
+        <div className="container mx-auto px-4 py-4 flex items-center">
+          {/* Mobile Layout - Three columns with equal width for perfect centering */}
+          <div className="md:hidden w-full grid grid-cols-3 items-center">
+            {/* Left Column - Hamburger */}
+            <div className="flex justify-start">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMobileMenuOpen(!mobileMenuOpen);
                 }}
-                inputRef={searchInputRef}
-                autoFocus={true}
-              />
+                className="text-pink-700"
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
             </div>
-          ) : (
-            <button
-              onClick={() => setMobileSearchActive(true)}
-              className="text-pink-700 p-2"
-            >
-              <Search size={20} />
-            </button>
-          )}
-          
-          {/* Close search button when active */}
-          {mobileSearchActive && (
-            <button
-              onClick={() => setMobileSearchActive(false)}
-              className="text-pink-700"
-            >
-              <X size={20} />
-            </button>
-          )}
-          
-          {/* Only show cart and menu when search is not active */}
-          {!mobileSearchActive && (
-            <>
-              {/* Mobile Cart */}
+            
+            {/* Center Column - Logo */}
+            <div className="flex justify-center">
+              <div
+                onClick={() => setActiveSection("home")}
+                className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 text-xl"
+              >
+                uzucrochets
+              </div>
+            </div>
+            
+            {/* Right Column - Search & Cart */}
+            <div className="flex justify-end items-center space-x-3">
+              <button
+                onClick={() => setMobileSearchActive(true)}
+                className="text-pink-700 p-2"
+              >
+                <Search size={20} />
+              </button>
+              
               <div className="relative">
                 <button
                   onClick={() => setActiveSection("cart")}
@@ -158,24 +128,64 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden md:flex w-full justify-between items-center">
+            {/* Logo */}
+            <div
+              onClick={() => setActiveSection("home")}
+              className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 text-2xl"
+            >
+              uzucrochets
+            </div>
+
+            {/* Desktop Navigation */}
+            <nav className="flex items-center space-x-6">
+              {["home", "products"].map((section) => (
+                <button
+                  key={section}
+                  onClick={() => setActiveSection(section)}
+                  className={`${
+                    activeSection === section ? "text-red-500" : "text-pink-700"
+                  } hover:text-red-400 font-medium transition`}
+                >
+                  {section.charAt(0).toUpperCase() + section.slice(1)}
+                </button>
+              ))}
               
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMobileMenuOpen(!mobileMenuOpen);
-                }}
-                className="text-pink-700"
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </>
-          )}
+              {/* Desktop Search */}
+              <SearchBar 
+                products={products} 
+                onSelectProduct={onSelectProduct} 
+              />
+              
+              {/* Desktop Cart Button */}
+              <div className="relative">
+                <button
+                  onClick={() => setActiveSection("cart")}
+                  className={`${
+                    activeSection === "cart"
+                      ? "bg-gradient-to-r from-red-500 to-red-600"
+                      : "bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500"
+                  } text-white p-2 rounded-full transition-all transform hover:scale-105 relative`}
+                >
+                  <ShoppingCart size={20} />
+                  {getTotalItems() > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {getTotalItems()}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
+      {mobileMenuOpen && !mobileSearchActive && (
         <div
           ref={menuRef}
           className="md:hidden bg-white/95 py-4 shadow-lg animate-fadeIn fixed top-[65px] left-0 w-full"
