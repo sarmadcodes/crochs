@@ -13,8 +13,8 @@ export const Footer: React.FC = () => {
           
           {/* Social Media Links */}
           <div className="flex flex-wrap justify-center md:justify-start space-x-6">
-            <a href="https://www.instagram.com/uzucrochets/" className="text-white hover:text-pink-200 transition">
-              Instagram
+            <a href="https://www.instagram.com/uzucrochets/" className="text-white hover:text-pink-200 transition font-medium">
+              Our Instagram
             </a>
             
           </div>
