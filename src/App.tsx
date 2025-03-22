@@ -86,7 +86,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-pink-50">
+    <div className="min-h-screen bg-pink-100">
       <Header 
         activeSection={activeSection}
         setActiveSection={setActiveSection}
