@@ -32,7 +32,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         <input
           ref={actualInputRef}
           type="text"
-          placeholder="Search products..."
+          placeholder="Search crochets..."
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
