@@ -16,7 +16,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
     <div className="pt-24 pb-16 min-h-screen">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl md:text-4xl font-bold mb-10 text-center">
-          <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Our Products</span>
+          <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Our Crochets</span>
         </h1>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
