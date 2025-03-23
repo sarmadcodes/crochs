@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { CartNotification } from './components/CartNotification';
@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartNotification, setCartNotification] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,6 +28,13 @@ const App: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Add this new effect to scroll to top when section changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    // Alternative method if the above doesn't work well:
+    // mainRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [activeSection]);
 
   const addToCart = (product: Product) => {
     const existingItem = cart.find(item => item.id === product.id);
@@ -87,7 +95,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-pink-100">
+    <div className="flex flex-col min-h-screen bg-pink-100">
       <Header 
         activeSection={activeSection}
         setActiveSection={setActiveSection}
@@ -98,8 +106,9 @@ const App: React.FC = () => {
         products={products}
         onSelectProduct={viewProductDetails}
       />
-
-      <main>
+  
+      {/* This ensures the main content grows and pushes the footer down */}
+      <main ref={mainRef} className="flex-grow">
         {activeSection === 'home' && (
           <HomeSection 
             setActiveSection={setActiveSection}
@@ -114,7 +123,7 @@ const App: React.FC = () => {
             onViewProductDetails={viewProductDetails}
           />
         )}
-
+  
         {activeSection === 'product-details' && (
           <ProductDetailsPage 
             product={selectedProduct}
@@ -123,7 +132,7 @@ const App: React.FC = () => {
             goToCart={goToCart}
           />
         )}
-
+  
         {activeSection === 'cart' && (
           <CartSection 
             cart={cart}
@@ -135,16 +144,17 @@ const App: React.FC = () => {
           />
         )}
       </main>
-
+  
       <CartNotification 
         show={cartNotification}
         totalItems={getTotalItems()}
         onViewCart={() => setActiveSection('cart')}
       />
-      
+  
       <Footer />
     </div>
   );
+  
 };
 
 export default App;
