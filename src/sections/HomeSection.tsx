@@ -17,7 +17,6 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
 }) => {
   return (
     <div className="pt-12 md:pt-16">
-      {/* Hero Section - Reduced height and centered content */}
       <section className="min-h-[70vh] md:min-h-[80vh] flex flex-col justify-center items-center text-center px-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full flex justify-between overflow-hidden opacity-20">
           {[...Array(20)].map((_, i) => (
@@ -59,7 +58,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
       
-      {/* Featured Section - Made responsive */}
+      {/* Featured Section - Made responsive with larger images */}
       <section className="py-10 md:py-16 px-4 bg-gradient-to-b from-pink-100 to-white">
         <div className="container mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative">
@@ -74,6 +73,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
                 product={product}
                 onAddToCart={addToCart}
                 onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
+                isFeature={true}
               />
             ))}
           </div>
