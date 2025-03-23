@@ -143,12 +143,14 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Desktop Navigation */}
             <nav className="flex items-center space-x-6">
-              {["home", "products"].map((section) => (
+              {["home", "crochets"].map((section) => (
                 <button
                   key={section}
-                  onClick={() => setActiveSection(section)}
+                  onClick={() => setActiveSection(section === "crochets" ? "products" : section)}
                   className={`${
-                    activeSection === section ? "text-red-500" : "text-pink-700"
+                    (section === "crochets" && activeSection === "products") || activeSection === section
+                      ? "text-red-500" 
+                      : "text-pink-700"
                   } hover:text-red-400 font-medium transition`}
                 >
                   {section.charAt(0).toUpperCase() + section.slice(1)}
@@ -191,16 +193,18 @@ export const Header: React.FC<HeaderProps> = ({
           className="md:hidden bg-white/95 py-4 shadow-lg animate-fadeIn fixed top-[65px] left-0 w-full"
         >
           <div className="container mx-auto px-4 flex flex-col space-y-4">
-            {["home", "products"].map((section) => (
+            {["home", "crochets"].map((section) => (
               <button
                 key={section}
                 onClick={() => {
-                  setActiveSection(section);
+                  setActiveSection(section === "crochets" ? "products" : section);
                   setMobileMenuOpen(false);
                 }}
                 className={`${
-                  activeSection === section ? "text-red-500" : "text-pink-700"
-                } text-lg font-medium text-left py-2`}
+                  (section === "crochets" && activeSection === "products") || activeSection === section
+                    ? "text-red-500" 
+                    : "text-pink-700"
+                } text-lg font-medium text-left py-2 hover:text-red-400 transition`}
               >
                 {section.charAt(0).toUpperCase() + section.slice(1)}
               </button>
