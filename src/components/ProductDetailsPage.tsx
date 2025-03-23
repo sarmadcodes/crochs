@@ -68,11 +68,17 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
     setCurrentImageIndex(index);
   };
 
+  // Handle back button click safely
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    goBack();
+  };
+
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="container mx-auto px-4">
         <button 
-          onClick={goBack}
+          onClick={handleBackClick}
           className="flex items-center text-pink-600 mb-8 hover:text-pink-700 transition-colors"
         >
           <ArrowLeft size={18} className="mr-2" />
