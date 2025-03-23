@@ -7,7 +7,7 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
           {/* Brand Section */}
           <div className="mb-6 md:mb-0">
-            <h2 className="text-2xl font-bold">Uzucrochets</h2>
+            <h2 className="text-2xl font-bold">crochets</h2>
             <p className="text-pink-100 mt-1">Handmade with love</p>
           </div>
           
@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
         {/* Copyright Section */}
         <div className="border-t border-pink-300 mt-6 pt-4 text-center text-pink-100 text-sm">
           <div className="flex flex-wrap justify-center items-center gap-2">
-            <p>© 2025 Uzucrochets. All rights reserved.</p>
+            <p>© 2025 crochets. All rights reserved.</p>
             <span className="hidden md:inline">•</span>
             {/* Developer Attribution */}
             <p className="flex items-center">
