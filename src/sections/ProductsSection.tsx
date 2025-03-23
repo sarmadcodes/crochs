@@ -14,7 +14,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
 }) => {
   return (
     <div className="pt-24 pb-16 min-h-screen">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-3">
         <h1 className="text-3xl md:text-4xl font-bold mb-10 text-center text-pink-600">
           Our Crochets
         </h1>
