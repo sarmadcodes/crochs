@@ -23,10 +23,6 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
         return [...products].sort((a, b) => a.price - b.price);
       case 'price-high-low':
         return [...products].sort((a, b) => b.price - a.price);
-      case 'name-a-z':
-        return [...products].sort((a, b) => a.name.localeCompare(b.name));
-      case 'name-z-a':
-        return [...products].sort((a, b) => b.name.localeCompare(a.name));
       default:
         return products;
     }
@@ -37,23 +33,21 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
   return (
     <div className="pt-24 pb-16 min-h-screen">
       <div className="container mx-auto px-3">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-pink-600">
+        <h1 className="text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center text-pink-600">
           Our Crochets
         </h1>
         
-        {/* Sort dropdown */}
-        <div className="flex justify-end mb-6 relative">
+        {/* Sort dropdown - white bg with pink text and improved spacing */}
+        <div className="flex justify-end mb-8 relative mt-6 md:mt-2">
           <div className="relative">
             <button 
-              className="flex items-center text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50"
+              className="flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
               onClick={() => setShowSortOptions(!showSortOptions)}
             >
               <span>Sort by: {sortOption === 'default' ? 'Featured' : 
                 sortOption === 'price-low-high' ? 'Price: Low to High' : 
-                sortOption === 'price-high-low' ? 'Price: High to Low' :
-                sortOption === 'name-a-z' ? 'Name: A to Z' :
-                'Name: Z to A'}</span>
-              <ChevronDown size={16} className="ml-2" />
+                'Price: High to Low'}</span>
+              <ChevronDown size={16} className="ml-2 text-pink-600" />
             </button>
             
             {showSortOptions && (
@@ -84,24 +78,6 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                   }}
                 >
                   Price: High to Low
-                </button>
-                <button 
-                  className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'name-a-z' ? 'font-medium text-pink-600' : ''}`}
-                  onClick={() => {
-                    setSortOption('name-a-z');
-                    setShowSortOptions(false);
-                  }}
-                >
-                  Name: A to Z
-                </button>
-                <button 
-                  className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'name-z-a' ? 'font-medium text-pink-600' : ''}`}
-                  onClick={() => {
-                    setSortOption('name-z-a');
-                    setShowSortOptions(false);
-                  }}
-                >
-                  Name: Z to A
                 </button>
               </div>
             )}
