@@ -31,17 +31,17 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
   const sortedProducts = getSortedProducts();
   
   return (
-    <div className="pt-24 pb-16 min-h-screen">
+    <div className="products-section pt-24 pb-16 min-h-screen">
       <div className="container mx-auto px-3">
         <h1 className="text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center text-pink-600">
           Our Crochets
         </h1>
         
         {/* Sort dropdown - white bg with pink text and improved spacing */}
-        <div className="flex justify-end mb-8 relative mt-6 md:mt-2">
+        <div className="products-sort-container flex justify-end mb-8 relative mt-6 md:mt-2">
           <div className="relative">
             <button 
-              className="flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
+              className="products-sort-button flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
               onClick={() => setShowSortOptions(!showSortOptions)}
             >
               <span>Sort by: {sortOption === 'default' ? 'Featured' : 
@@ -51,7 +51,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
             </button>
             
             {showSortOptions && (
-              <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 py-1 border border-gray-200">
+              <div className="products-sort-dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 py-1 border border-gray-200">
                 <button 
                   className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'default' ? 'font-medium text-pink-600' : ''}`}
                   onClick={() => {
@@ -84,15 +84,14 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
           </div>
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
+        <div className="products-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
           {sortedProducts.map((product, index) => (
             <ProductCard 
               key={product.id} 
               product={product} 
               onAddToCart={addToCart}
               onViewDetails={() => onViewProductDetails(product)}
-              className="opacity-0 animate-fadeInUp"
-              // style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
+              className="products-card opacity-0 animate-fadeInUp"
             />
           ))}
         </div>
