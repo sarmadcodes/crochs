@@ -1,37 +1,32 @@
 import React from "react";
+import { Instagram } from "lucide-react"; // Import the Instagram icon from lucide-react
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-gradient-to-r from-pink-500 to-red-400 text-white py-6">
+    <footer className="bg-gradient-to-r from-pink-500 to-red-400 text-white py-3 md:py-4">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-          {/* Brand Section */}
-          <div className="mb-6 md:mb-0">
-            <h2 className="text-2xl font-bold">crochets</h2>
-            <p className="text-pink-100 mt-1">Handmade with love</p>
-          </div>
-          
-          {/* Social Media Links */}
-          <div className="flex flex-wrap justify-center md:justify-start space-x-6">
-            <a href="https://www.instagram.com/uzucrochets/" className="text-white hover:text-pink-200 transition font-medium">
-              Our Instagram
-              
-            </a>
-            
-          </div>
+        <div className="flex justify-center mb-2">
+          {/* Social Media Icon with Text - Now centered as the main element */}
+          <a 
+            href="#" 
+            className="text-white hover:text-pink-200 transition flex items-center"
+            aria-label="Follow us on Instagram"
+          >
+            <Instagram size={20} />
+            <span className="ml-2">crochets</span>
+          </a>
         </div>
         
-        {/* Copyright Section */}
-        <div className="border-t border-pink-300 mt-6 pt-4 text-center text-pink-100 text-sm">
-          <div className="flex flex-wrap justify-center items-center gap-2">
-            <p>© 2025 crochets. All rights reserved.</p>
-            <span className="hidden md:inline">•</span>
-            {/* Developer Attribution */}
-            <p className="flex items-center">
+        {/* Copyright Section - Simplified */}
+        <div className="border-t border-pink-300 pt-2 text-center text-pink-100 text-xs">
+          <div className="flex flex-wrap justify-center items-center gap-1">
+            <p>© 2025 crochets <span>•</span> all copyright reserved </p>
+            <span>•</span>
+            <p>
               Developed by{" "}
-              <a 
-                href="https://www.instagram.com/sarmad0/" 
-                className="inline-flex items-center ml-1 text-white hover:text-pink-200 transition"
+              <a
+                href="https://www.instagram.com/sarmad0/"
+                className="text-white hover:text-pink-200 transition"
               >
                 sarmad0
               </a>
