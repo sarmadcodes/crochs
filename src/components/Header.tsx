@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
     >
       {/* Mobile Search Bar (Full Width) - Only show when search is active */}
       {mobileSearchActive && (
-        <div className="md:hidden w-full bg-white py-3 px-4 animate-fadeIn flex items-center">
+        <div className="md:hidden w-full bg-white py-3 px-4 animate-slideDown flex items-center">
           <SearchBar 
             products={products} 
             onSelectProduct={(product) => {
@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
           />
           <button
             onClick={() => setMobileSearchActive(false)}
-            className="ml-2 text-pink-700"
+            className="ml-2 text-pink-700 hover:text-red-600 transition-colors duration-300 transform hover:rotate-90"
           >
             <X size={20} />
           </button>
@@ -86,9 +86,9 @@ export const Header: React.FC<HeaderProps> = ({
                   e.stopPropagation();
                   setMobileMenuOpen(!mobileMenuOpen);
                 }}
-                className="text-pink-700"
+                className="text-pink-700 transition-transform duration-300 transform hover:scale-110"
               >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                {mobileMenuOpen ? <X size={24} className="animate-rotateIn" /> : <Menu size={24} className="animate-pulse-subtle" />}
               </button>
             </div>
             
@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setActiveSection("home")}
                 className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 text-2xl"
               >
-                crochets
+                uzucrochets
               </div>
             </div>
             
@@ -106,9 +106,9 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex justify-end items-center space-x-3">
               <button
                 onClick={() => setMobileSearchActive(true)}
-                className="text-pink-700 p-2"
+                className="text-pink-700 p-2 transition-all duration-300 transform hover:scale-110"
               >
-                <Search size={20} />
+                <Search size={20} className="animate-bounce-subtle" />
               </button>
               
               <div className="relative">
@@ -118,11 +118,11 @@ export const Header: React.FC<HeaderProps> = ({
                     activeSection === "cart"
                       ? "bg-gradient-to-r from-red-500 to-red-600"
                       : "bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500"
-                  } text-white p-2 rounded-full transition-all transform hover:scale-105 relative`}
+                  } text-white p-2 rounded-full transition-all transform hover:scale-110 active:scale-95 relative`}
                 >
-                  <ShoppingCart size={20} />
+                  <ShoppingCart size={20} className={getTotalItems() > 0 ? "animate-wiggle" : ""} />
                   {getTotalItems() > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-popup">
                       {getTotalItems()}
                     </span>
                   )}
@@ -138,7 +138,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => setActiveSection("home")}
               className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 text-2xl"
             >
-              crochets
+              uzucrochets
             </div>
 
             {/* Desktop Navigation */}
@@ -151,7 +151,7 @@ export const Header: React.FC<HeaderProps> = ({
                     (section === "crochets" && activeSection === "products") || activeSection === section
                       ? "text-red-500" 
                       : "text-pink-700"
-                  } hover:text-red-400 font-medium transition`}
+                  } hover:text-red-400 font-medium transition-all duration-300 transform hover:scale-105`}
                 >
                   {section.charAt(0).toUpperCase() + section.slice(1)}
                 </button>
@@ -171,11 +171,11 @@ export const Header: React.FC<HeaderProps> = ({
                     activeSection === "cart"
                       ? "bg-gradient-to-r from-red-500 to-red-600"
                       : "bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500"
-                  } text-white p-2 rounded-full transition-all transform hover:scale-105 relative`}
+                  } text-white p-2 rounded-full transition-all transform hover:scale-110 active:scale-95 relative`}
                 >
-                  <ShoppingCart size={20} />
+                  <ShoppingCart size={20} className={getTotalItems() > 0 ? "animate-wiggle" : ""} />
                   {getTotalItems() > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-popup">
                       {getTotalItems()}
                     </span>
                   )}
@@ -190,7 +190,7 @@ export const Header: React.FC<HeaderProps> = ({
       {mobileMenuOpen && !mobileSearchActive && (
         <div
           ref={menuRef}
-          className="md:hidden bg-white/95 py-4 shadow-lg animate-fadeIn fixed top-[65px] left-0 w-full"
+          className="md:hidden bg-white/95 py-4 shadow-lg animate-slideDown fixed top-[65px] left-0 w-full"
         >
           <div className="container mx-auto px-4 flex flex-col space-y-4">
             {["home", "crochets"].map((section) => (
@@ -204,7 +204,7 @@ export const Header: React.FC<HeaderProps> = ({
                   (section === "crochets" && activeSection === "products") || activeSection === section
                     ? "text-red-500" 
                     : "text-pink-700"
-                } text-lg font-medium text-left py-2 hover:text-red-400 transition`}
+                } text-lg font-medium text-left py-2 hover:text-red-400 transition-all duration-300 transform hover:translate-x-2`}
               >
                 {section.charAt(0).toUpperCase() + section.slice(1)}
               </button>
@@ -213,7 +213,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       )}
 
-      {/* Glitter Animation */}
+      {/* Animations */}
       <style>
         {`
           @keyframes glitter {
@@ -241,6 +241,83 @@ export const Header: React.FC<HeaderProps> = ({
 
           .animate-fadeIn {
             animation: fadeIn 0.3s ease-in-out;
+          }
+          
+          @keyframes slideDown {
+            from { 
+              opacity: 0;
+              transform: translateY(-10px);
+            }
+            to { 
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          .animate-slideDown {
+            animation: slideDown 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          }
+          
+          @keyframes rotateIn {
+            from {
+              transform: rotate(-90deg);
+              opacity: 0;
+            }
+            to {
+              transform: rotate(0);
+              opacity: 1;
+            }
+          }
+          
+          .animate-rotateIn {
+            animation: rotateIn 0.3s ease-out;
+          }
+          
+          @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+          }
+          
+          .animate-wiggle {
+            animation: wiggle 0.5s ease-in-out;
+            animation-iteration-count: 1;
+          }
+          
+          @keyframes popup {
+            0% { 
+              transform: scale(0);
+              opacity: 0;
+            }
+            80% {
+              transform: scale(1.2);
+            }
+            100% { 
+              transform: scale(1);
+              opacity: 1;
+            }
+          }
+          
+          .animate-popup {
+            animation: popup 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          }
+          
+          @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+          }
+          
+          .animate-bounce-subtle {
+            animation: bounce-subtle 2s infinite ease-in-out;
+          }
+          
+          @keyframes pulse-subtle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+          }
+          
+          .animate-pulse-subtle {
+            animation: pulse-subtle 2s infinite ease-in-out;
           }
         `}
       </style>
