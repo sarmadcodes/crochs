@@ -58,15 +58,15 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
       
-      {/* Featured Section - Made responsive with larger images */}
-      <section className="py-10 md:py-16 px-4 bg-gradient-to-b from-pink-100 to-white">
+      {/* Featured Section with Unique Styling */}
+      <section className="home-featured-section py-10 md:py-16 px-4 bg-gradient-to-b from-pink-100 to-white">
         <div className="container mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative">
             <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Featured Creations</span>
             <span className="block w-16 md:w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 mx-auto mt-3 md:mt-4"></span>
           </h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="home-featured-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {products.slice(0, 3).map((product) => (
               <ProductCard
                 key={product.id}
@@ -74,6 +74,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
                 onAddToCart={addToCart}
                 onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
                 isFeature={true}
+                className="home-featured-card"
               />
             ))}
           </div>
