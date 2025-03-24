@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setActiveSection("home")}
                 className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 text-2xl"
               >
-                uzucrochets
+                crochets
               </div>
             </div>
             
