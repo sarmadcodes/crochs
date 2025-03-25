@@ -18,6 +18,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const touchMoved = useRef(false);
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % products.slice(0, 3).length);
@@ -29,17 +30,29 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchMoved.current = false;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
+    if (Math.abs(touchStartX.current - touchEndX.current) > 10) {
+      touchMoved.current = true;
+    }
   };
 
   const handleTouchEnd = () => {
-    if (touchStartX.current - touchEndX.current > 50) {
-      nextSlide();
-    } else if (touchEndX.current - touchStartX.current > 50) {
-      prevSlide();
+    if (touchMoved.current) {
+      if (touchStartX.current - touchEndX.current > 50) {
+        nextSlide();
+      } else if (touchEndX.current - touchStartX.current > 50) {
+        prevSlide();
+      }
+    }
+  };
+
+  const handleCardClick = (product: Product) => {
+    if (!touchMoved.current) {
+      onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products');
     }
   };
 
@@ -72,18 +85,19 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
 
           {/* Mobile Slider */}
           <div 
-            className="relative sm:hidden w-full h-[4in] overflow-hidden"
+            className="relative sm:hidden w-full h-[500px] overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
             <div className="flex transition-transform ease-in-out duration-300" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
               {products.slice(0, 3).map((product) => (
-                <div key={product.id} className="w-full flex-shrink-0 px-2 h-[4in]">
+                <div key={product.id} className="w-full flex-shrink-0 px-2 h-[500px]">
                   <ProductCard
                     product={product}
                     onAddToCart={addToCart}
-                    onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
+                    onViewDetails={() => handleCardClick(product)}
+                    isFeature={true}
                   />
                 </div>
               ))}
@@ -106,7 +120,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
           </div>
 
           {/* Desktop Grid */}
-          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 max-h-[400px]">
             {products.slice(0, 3).map((product) => (
               <ProductCard
                 key={product.id}
