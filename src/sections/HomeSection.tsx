@@ -36,10 +36,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
                 animationDuration: `${5 + Math.random() * 10}s`
               }}
             >
-              <Heart
-                size={10 + Math.random() * 20}
-                className={Math.random() > 0.5 ? "text-pink-500" : "text-red-500"}
-              />
+              
             </div>
           ))}
         </div>
