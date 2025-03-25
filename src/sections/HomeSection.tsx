@@ -105,24 +105,24 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             </Swiper>
 
             {/* Navigation Container */}
-            <div className="flex items-center justify-center mt-4 space-x-4">
+            <div className="flex items-center justify-center mt-4">
               {/* Previous Navigation Arrow */}
-              <button className="swiper-custom-prev bg-pink-500/30 hover:bg-pink-500/50 rounded-full p-1">
-                <ChevronLeft className="text-white" size={30} />
+              <button className="swiper-custom-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
+                <ChevronLeft size={24} />
               </button>
 
-              
-              
+              {/* Pagination Dots */}
+              <div className="swiper-pink-pagination flex items-center justify-center mx-4 "></div>
 
               {/* Next Navigation Arrow */}
-              <button className="swiper-custom-next bg-pink-500/30 hover:bg-pink-500/50 rounded-full p-1">
-                <ChevronRight className="text-white" size={30} />
+              <button className="swiper-custom-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
+                <ChevronRight size={24} />
               </button>
             </div>
           </div>
 
           {/* Desktop Grid (hidden on mobile) */}
-          <div className="hidden md:grid home-featured-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="hidden md:grid home-featured-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
             {products.slice(0, 3).map((product) => (
               <ProductCard
                 key={product.id}
