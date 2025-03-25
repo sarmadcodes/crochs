@@ -1,5 +1,10 @@
 import React from 'react';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation, A11y } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 import { ProductCard } from '../components/ProductCard';
 import { products } from '../data/products';
 import { Product } from '../types';
@@ -58,7 +63,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
       
-      {/* Featured Section with Unique Styling */}
+      {/* Featured Section with Mobile Slider */}
       <section className="home-featured-section py-10 md:py-16 px-4 bg-gradient-to-b from-pink-100 to-white">
         <div className="container mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative">
@@ -66,7 +71,58 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             <span className="block w-16 md:w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 mx-auto mt-3 md:mt-4"></span>
           </h2>
           
-          <div className="home-featured-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          {/* Mobile Slider (visible only on mobile) */}
+          <div className="block md:hidden relative">
+            <Swiper
+              modules={[Pagination, Navigation, A11y]}
+              spaceBetween={16}
+              slidesPerView={1.1}
+              centeredSlides={true}
+              pagination={{ 
+                clickable: true,
+                el: '.swiper-custom-pagination',
+                renderBullet: function (index, className) {
+                  return '<span class="' + className + '"></span>';
+                }
+              }}
+              navigation={{
+                prevEl: '.swiper-custom-prev',
+                nextEl: '.swiper-custom-next'
+              }}
+              className="featured-mobile-slider"
+            >
+              {products.slice(0, 3).map((product) => (
+                <SwiperSlide key={product.id} className="pb-10">
+                  <ProductCard
+                    product={product}
+                    onAddToCart={addToCart}
+                    onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
+                    isFeature={true}
+                    className="home-featured-card"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* Navigation Container */}
+            <div className="flex items-center justify-center mt-4 space-x-4">
+              {/* Previous Navigation Arrow */}
+              <button className="swiper-custom-prev bg-pink-500/30 hover:bg-pink-500/50 rounded-full p-1">
+                <ChevronLeft className="text-white" size={30} />
+              </button>
+
+              
+              
+
+              {/* Next Navigation Arrow */}
+              <button className="swiper-custom-next bg-pink-500/30 hover:bg-pink-500/50 rounded-full p-1">
+                <ChevronRight className="text-white" size={30} />
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Grid (hidden on mobile) */}
+          <div className="hidden md:grid home-featured-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
             {products.slice(0, 3).map((product) => (
               <ProductCard
                 key={product.id}
