@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ArrowLeft, Heart, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 
@@ -22,6 +22,10 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
 }) => {
   // State to track the current image index
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Refs for touch tracking
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   if (!product) {
     return (
@@ -68,6 +72,32 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
     setCurrentImageIndex(index);
   };
 
+  // Touch event handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (productImages.length <= 1) return;
+
+    const diffX = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50; // Minimum distance to trigger a swipe
+
+    if (Math.abs(diffX) > minSwipeDistance) {
+      if (diffX > 0) {
+        // Swiped left, go to next image
+        goToNextImage();
+      } else {
+        // Swiped right, go to previous image
+        goToPreviousImage();
+      }
+    }
+  };
+
   // Handle back button click safely
   const handleBackClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -89,7 +119,12 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
           <div className="md:flex">
             {/* Product Image Gallery */}
             <div className="md:w-1/2">
-              <div className="h-96 md:h-full overflow-hidden relative">
+              <div 
+                className="h-96 md:h-full overflow-hidden relative"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
                 {/* Main image */}
                 <img 
                   src={productImages[currentImageIndex]} 
