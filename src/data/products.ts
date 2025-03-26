@@ -9,8 +9,8 @@ export const products: Product[] = [
     category: "Blankets",
     images: [
       "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg",
-      "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg",
-      "https://i.pinimg.com/736x/78/82/f8/7882f8d3a2873d410e0a631137952d4b.jpg"
+      "https://preview.redd.it/just-made-this-cute-crochet-bunny-v0-sbgy94fqr6dd1.jpg?width=640&crop=smart&auto=webp&s=da649e913ce1ea2738ec153278dd5f28a703663e",
+      "https://i.etsystatic.com/41528957/r/il/1f32ba/6068034790/il_fullxfull.6068034790_qx7z.jpg"
     ]
   },
   { 
