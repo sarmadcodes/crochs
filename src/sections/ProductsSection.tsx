@@ -40,13 +40,13 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
         </h1>
         
         {/* Sort and Back to Home Container */}
-        <div className="products-sort-container flex justify-between items-center mb-8 relative mt-6 md:mt-2">
+        <div className="products-sort-container flex flex-col sm:flex-row justify-between items-center mb-8 relative mt-6 md:mt-2 space-y-4 sm:space-y-0">
           {/* Back to Home Button */}
           <button 
             onClick={goBack}
-            className="flex items-center text-pink-600 hover:text-pink-700 transition-colors"
+            className="flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
           >
-            <ArrowLeft size={18} className="mr-2" />
+            <ArrowLeft size={16} className="mr-2" />
             <span>Back to Home</span>
           </button>
 
