@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ArrowLeft, ChevronDown } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 import { products } from '../data/products';
 import { Product } from '../types';
@@ -7,11 +7,13 @@ import { Product } from '../types';
 interface ProductsSectionProps {
   addToCart: (product: Product) => void;
   onViewProductDetails: (product: Product) => void;
+  goBack: () => void; // New prop for returning to home
 }
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({ 
   addToCart,
-  onViewProductDetails
+  onViewProductDetails,
+  goBack // Destructure the new prop
 }) => {
   const [sortOption, setSortOption] = useState('default');
   const [showSortOptions, setShowSortOptions] = useState(false);
@@ -37,8 +39,18 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
           Our Crochets
         </h1>
         
-        {/* Sort dropdown - white bg with pink text and improved spacing */}
-        <div className="products-sort-container flex justify-end mb-8 relative mt-6 md:mt-2">
+        {/* Sort and Back to Home Container */}
+        <div className="products-sort-container flex justify-between items-center mb-8 relative mt-6 md:mt-2">
+          {/* Back to Home Button */}
+          <button 
+            onClick={goBack}
+            className="flex items-center text-pink-600 hover:text-pink-700 transition-colors"
+          >
+            <ArrowLeft size={18} className="mr-2" />
+            <span>Back to Home</span>
+          </button>
+
+          {/* Sort dropdown */}
           <div className="relative">
             <button 
               className="products-sort-button flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
@@ -85,7 +97,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
         </div>
         
         <div className="products-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
-          {sortedProducts.map((product, index) => (
+          {sortedProducts.map((product) => (
             <ProductCard 
               key={product.id} 
               product={product} 
