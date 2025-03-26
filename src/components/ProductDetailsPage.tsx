@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ArrowLeft, Heart, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 
 // Extended product type with multiple images
@@ -109,7 +109,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
       <div className="container mx-auto px-4">
         <button 
           onClick={handleBackClick}
-          className="flex items-center text-pink-600 mb-8 hover:text-pink-700 transition-colors"
+           className="flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium mb-6"
         >
           <ArrowLeft size={18} className="mr-2" />
           <span>Back to Products</span>
