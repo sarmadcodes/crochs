@@ -41,58 +41,60 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
         
         {/* Sort and Back to Home Container */}
         <div className="products-sort-container flex flex-col sm:flex-row justify-between items-center mb-8 relative mt-6 md:mt-2 space-y-4 sm:space-y-0">
-          {/* Back to Home Button */}
-          <button 
-            onClick={goBack}
-            className="flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
-          >
-            <ArrowLeft size={16} className="mr-2" />
-            <span>Back to Home</span>
-          </button>
-
-          {/* Sort dropdown */}
-          <div className="relative">
+          <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-start">
+            {/* Back to Home Button */}
             <button 
-              className="products-sort-button flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
-              onClick={() => setShowSortOptions(!showSortOptions)}
+              onClick={goBack}
+              className="flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
             >
-              <span>Sort by: {sortOption === 'default' ? 'Featured' : 
-                sortOption === 'price-low-high' ? 'Price: Low to High' : 
-                'Price: High to Low'}</span>
-              <ChevronDown size={16} className="ml-2 text-pink-600" />
+              <ArrowLeft size={16} className="mr-2" />
+              <span>Back to Home</span>
             </button>
-            
-            {showSortOptions && (
-              <div className="products-sort-dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 py-1 border border-gray-200">
-                <button 
-                  className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'default' ? 'font-medium text-pink-600' : ''}`}
-                  onClick={() => {
-                    setSortOption('default');
-                    setShowSortOptions(false);
-                  }}
-                >
-                  Featured
-                </button>
-                <button 
-                  className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'price-low-high' ? 'font-medium text-pink-600' : ''}`}
-                  onClick={() => {
-                    setSortOption('price-low-high');
-                    setShowSortOptions(false);
-                  }}
-                >
-                  Price: Low to High
-                </button>
-                <button 
-                  className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'price-high-low' ? 'font-medium text-pink-600' : ''}`}
-                  onClick={() => {
-                    setSortOption('price-high-low');
-                    setShowSortOptions(false);
-                  }}
-                >
-                  Price: High to Low
-                </button>
-              </div>
-            )}
+
+            {/* Sort dropdown */}
+            <div className="relative">
+              <button 
+                className="products-sort-button flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium"
+                onClick={() => setShowSortOptions(!showSortOptions)}
+              >
+                <span>Sort by: {sortOption === 'default' ? 'Featured' : 
+                  sortOption === 'price-low-high' ? 'Price: Low to High' : 
+                  'Price: High to Low'}</span>
+                <ChevronDown size={16} className="ml-2 text-pink-600" />
+              </button>
+              
+              {showSortOptions && (
+                <div className="products-sort-dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 py-1 border border-gray-200">
+                  <button 
+                    className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'default' ? 'font-medium text-pink-600' : ''}`}
+                    onClick={() => {
+                      setSortOption('default');
+                      setShowSortOptions(false);
+                    }}
+                  >
+                    Featured
+                  </button>
+                  <button 
+                    className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'price-low-high' ? 'font-medium text-pink-600' : ''}`}
+                    onClick={() => {
+                      setSortOption('price-low-high');
+                      setShowSortOptions(false);
+                    }}
+                  >
+                    Price: Low to High
+                  </button>
+                  <button 
+                    className={`block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 ${sortOption === 'price-high-low' ? 'font-medium text-pink-600' : ''}`}
+                    onClick={() => {
+                      setSortOption('price-high-low');
+                      setShowSortOptions(false);
+                    }}
+                  >
+                    Price: High to Low
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
