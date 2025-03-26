@@ -204,6 +204,7 @@ const App: React.FC = () => {
           <ProductsSection 
             addToCart={addToCart} 
             onViewProductDetails={viewProductDetails}
+            goBack={() => setActiveSection('home')} // Added this line
           />
         )}
   
