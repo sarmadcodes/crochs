@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
 
@@ -20,8 +20,10 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
   goBack,
   goToCart 
 }) => {
-  // State to track the current image index
+  // State to track the current image index and manage transitions
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<'left' | 'right'>('right');
 
   // Refs for touch tracking
   const touchStartX = useRef(0);
@@ -48,28 +50,39 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
     ? product.images 
     : [product.image];
 
-  // Function to handle "Buy Now" action
-  const handleBuyNow = () => {
-    addToCart(product);
-    goToCart();
+  // Function to handle image transition
+  const changeImage = (newIndex: number, direction: 'left' | 'right') => {
+    if (isTransitioning) return;
+
+    setTransitionDirection(direction);
+    setIsTransitioning(true);
+
+    // Wait for transition to complete before updating index
+    setTimeout(() => {
+      setCurrentImageIndex(newIndex);
+      setIsTransitioning(false);
+    }, 300); // Match this with the transition duration
   };
 
   // Functions to navigate between images
   const goToPreviousImage = () => {
-    setCurrentImageIndex(prev => 
-      prev === 0 ? productImages.length - 1 : prev - 1
-    );
+    const newIndex = currentImageIndex === 0 
+      ? productImages.length - 1 
+      : currentImageIndex - 1;
+    changeImage(newIndex, 'right');
   };
 
   const goToNextImage = () => {
-    setCurrentImageIndex(prev => 
-      prev === productImages.length - 1 ? 0 : prev + 1
-    );
+    const newIndex = currentImageIndex === productImages.length - 1 
+      ? 0 
+      : currentImageIndex + 1;
+    changeImage(newIndex, 'left');
   };
 
   // Function to directly go to a specific image
   const goToImage = (index: number) => {
-    setCurrentImageIndex(index);
+    const direction = index > currentImageIndex ? 'left' : 'right';
+    changeImage(index, direction);
   };
 
   // Touch event handlers
@@ -98,10 +111,43 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
     }
   };
 
+  // Render previous and next images for transition effect
+  const prevIndex = currentImageIndex === 0 
+    ? productImages.length - 1 
+    : currentImageIndex - 1;
+  const nextIndex = currentImageIndex === productImages.length - 1 
+    ? 0 
+    : currentImageIndex + 1;
+
   // Handle back button click safely
   const handleBackClick = (e: React.MouseEvent) => {
     e.preventDefault();
     goBack();
+  };
+
+  // Function to get transition classes
+  const getTransitionClasses = (imageIndex: number) => {
+    if (imageIndex === currentImageIndex) {
+      return isTransitioning 
+        ? (transitionDirection === 'left' 
+            ? 'animate-slide-out-left' 
+            : 'animate-slide-out-right')
+        : 'opacity-100';
+    }
+    
+    if (imageIndex === prevIndex || imageIndex === nextIndex) {
+      return isTransitioning 
+        ? (transitionDirection === 'left' 
+            ? (imageIndex === nextIndex 
+                ? 'animate-slide-in-right' 
+                : 'opacity-0')
+            : (imageIndex === prevIndex 
+                ? 'animate-slide-in-left' 
+                : 'opacity-0'))
+        : 'opacity-0';
+    }
+    
+    return 'opacity-0';
   };
 
   return (
@@ -109,7 +155,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
       <div className="container mx-auto px-4">
         <button 
           onClick={handleBackClick}
-           className="flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium mb-6"
+          className="flex items-center text-sm bg-white text-pink-600 px-4 py-2 rounded-lg shadow-sm border border-pink-200 hover:bg-pink-50 transition-colors font-medium mb-6"
         >
           <ArrowLeft size={18} className="mr-2" />
           <span>Back to Products</span>
@@ -125,26 +171,32 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
-                {/* Main image */}
-                <img 
-                  src={productImages[currentImageIndex]} 
-                  alt={`${product.name} - View ${currentImageIndex + 1}`} 
-                  className="w-full h-full object-cover"
-                />
+                {/* Image Carousel with Transitions */}
+                <div className="absolute inset-0 flex">
+                  {[prevIndex, currentImageIndex, nextIndex].map((imageIndex) => (
+                    <img 
+                      key={imageIndex}
+                      src={productImages[imageIndex]} 
+                      alt={`${product.name} - View ${imageIndex + 1}`} 
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 
+                        ${getTransitionClasses(imageIndex)}`}
+                    />
+                  ))}
+                </div>
                 
                 {/* Navigation arrows - only show if there are multiple images */}
                 {productImages.length > 1 && (
                   <>
                     <button 
                       onClick={goToPreviousImage}
-                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 p-2 rounded-full hover:bg-opacity-100 transition-all z-10"
                       aria-label="Previous image"
                     >
                       <ChevronLeft size={24} className="text-gray-800" />
                     </button>
                     <button 
                       onClick={goToNextImage}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 p-2 rounded-full hover:bg-opacity-100 transition-all z-10"
                       aria-label="Next image"
                     >
                       <ChevronRight size={24} className="text-gray-800" />
@@ -195,7 +247,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
               )}
             </div>
 
-            {/* Product Information */}
+            {/* Rest of the component remains the same as before */}
             <div className="md:w-1/2 p-6 md:p-8">
               <div className="text-sm font-medium text-pink-500 mb-2">{product.category}</div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">{product.name}</h1>
@@ -223,7 +275,10 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                   Add to Cart
                 </button>
                 <button 
-                  onClick={handleBuyNow}
+                  onClick={() => {
+                    addToCart(product);
+                    goToCart();
+                  }}
                   className="bg-pink-600 hover:bg-pink-700 text-white py-3 px-6 rounded-lg text-sm font-medium transition-colors"
                 >
                   Buy Now
@@ -236,3 +291,5 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
     </div>
   );
 };
+
+
