@@ -7,30 +7,38 @@ import { Product } from '../types';
 interface ProductsSectionProps {
   addToCart: (product: Product) => void;
   onViewProductDetails: (product: Product) => void;
-  goBack: () => void; // New prop for returning to home
+  goBack: () => void;
 }
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({ 
   addToCart,
   onViewProductDetails,
-  goBack // Destructure the new prop
+  goBack
 }) => {
   const [sortOption, setSortOption] = useState('default');
   const [showSortOptions, setShowSortOptions] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
   
-  // Sort products based on selected option
-  const getSortedProducts = () => {
+  // Hardcoded categories
+  const categories = ['all', 'Keychains', 'Bouquets', 'Plush'];
+
+  // Filter and sort products
+  const getFilteredAndSortedProducts = () => {
+    let filteredProducts = activeCategory === 'all' 
+      ? products 
+      : products.filter(product => product.category === activeCategory);
+
     switch (sortOption) {
       case 'price-low-high':
-        return [...products].sort((a, b) => a.price - b.price);
+        return [...filteredProducts].sort((a, b) => a.price - b.price);
       case 'price-high-low':
-        return [...products].sort((a, b) => b.price - a.price);
+        return [...filteredProducts].sort((a, b) => b.price - a.price);
       default:
-        return products;
+        return filteredProducts;
     }
   };
   
-  const sortedProducts = getSortedProducts();
+  const filteredAndSortedProducts = getFilteredAndSortedProducts();
   
   return (
     <div className="products-section pt-24 pb-16 min-h-screen">
@@ -97,9 +105,26 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Category Filter */}
+        <div className="category-filter flex justify-center space-x-4 md:space-x-8 mb-8">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              className={`pb-1 text-sm md:text-base uppercase tracking-wider transition-colors ${
+                activeCategory === category 
+                  ? 'text-pink-600 border-b-2 border-pink-600 font-semibold' 
+                  : 'text-gray-500 hover:text-pink-400'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
         
         <div className="products-grid grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
-          {sortedProducts.map((product) => (
+          {filteredAndSortedProducts.map((product) => (
             <ProductCard 
               key={product.id} 
               product={product} 
@@ -109,6 +134,13 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
             />
           ))}
         </div>
+
+        {/* No Products Message */}
+        {filteredAndSortedProducts.length === 0 && (
+          <div className="text-center text-gray-500 mt-8">
+            No products found in this category.
+          </div>
+        )}
       </div>
     </div>
   );
