@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductCardProps {
@@ -46,13 +46,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             }}
             className={`
               ${isFeature 
-                ? 'bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-medium transition-colors flex items-center' 
-                : 'bg-pink-100 hover:bg-pink-200 text-pink-700 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium transition-colors flex items-center'
+                ? 'bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium transition-colors flex items-center' 
+                : 'bg-pink-100 hover:bg-pink-200 text-pink-700 px-2 py-0.5 sm:px-3 sm:py-1 md:px-5 md:py-2 rounded-full text-xs sm:text-sm md:text-base font-medium transition-colors flex items-center'
               }
             `}
           >
-            <ShoppingCart size={isFeature ? 14 : 12} className="mr-1" />
-            Add
+            <ShoppingCart size={isFeature ? 14 : 12} className="mr-1 md:mr-2 md:w-5 md:h-5" />
+            <span className="md:font-semibold">Add to cart</span>
           </button>
         </div>
       </div>
