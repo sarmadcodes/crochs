@@ -204,65 +204,65 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
       </section>
 
       {/* Reviews Section */}
-      <section className="home-reviews-section py-10 md:py-16 px-4 bg-gradient-to-b from-white to-pink-50">
-        <div className="container mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative">
-            <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Customer Reviews</span>
-            <span className="block w-16 md:w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 mx-auto mt-3 md:mt-4"></span>
-          </h2>
-          
-          {/* Mobile Slider (visible only on mobile) */}
-          <div className="block md:hidden relative">
-            <Swiper
+<section className="home-reviews-section py-10 md:py-16 px-4 bg-gradient-to-b from-white to-pink-50">
+  <div className="container mx-auto">
+    <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative">
+      <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Customer Reviews</span>
+      <span className="block w-16 md:w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 mx-auto mt-3 md:mt-4"></span>
+    </h2>
+    
+    {/* Mobile Slider (visible only on mobile) */}
+    <div className="block md:hidden relative">
+    <Swiper
               modules={[Pagination, Navigation, A11y]}
               spaceBetween={16}
               slidesPerView={1.1}
               centeredSlides={true}
               pagination={{ 
                 clickable: true,
-                el: '.swiper-reviews-pagination',
+                el: '.swiper-custom-pagination',
                 renderBullet: function (className) {
                   return '<span class="' + className + '"></span>';
                 }
               }}
               navigation={{
-                prevEl: '.swiper-reviews-prev',
-                nextEl: '.swiper-reviews-next'
+                prevEl: '.swiper-custom-prev',
+                nextEl: '.swiper-custom-next'
               }}
-              className="reviews-mobile-slider"
+              className="featured-mobile-slider"
             >
-              {reviews.map((review) => (
-                <SwiperSlide key={review.id} className="pb-10">
-                  <ReviewCard {...review} />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+        {reviews.map((review) => (
+          <SwiperSlide key={review.id} className="pb-10">
+            <ReviewCard {...review} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
-             {/* Navigation Container */}
-             <div className="flex items-center justify-center mt-4">
-              {/* Previous Navigation Arrow */}
-              <button className="swiper-custom-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
-                <ChevronLeft size={24}/>
-              </button>
+      {/* Navigation Container */}
+      <div className="flex items-center justify-center mt-4">
+        {/* Previous Navigation Arrow */}
+        <button className="swiper-custom-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
+          <ChevronLeft size={24}/>
+        </button>
+        
+        {/* Pagination Dots */}
+        <div className="swiper-pink-pagination flex items-center justify-center mx-4"></div>
+        
+        {/* Next Navigation Arrow */}
+        <button className="swiper-custom-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
+          <ChevronRight size={24} />
+        </button>
+      </div>
+    </div>
 
-              {/* Pagination Dots */}
-              <div className="swiper-pink-pagination flex items-center justify-center mx-4 "></div>
-
-              {/* Next Navigation Arrow */}
-              <button className="swiper-custom-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
-                <ChevronRight size={24} />
-              </button>
-            </div>
-          </div>
-
-          {/* Desktop Grid (hidden on mobile) */}
-          <div className="hidden md:grid home-reviews-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-            {reviews.map((review) => (
-              <ReviewCard key={review.id} {...review} />
-            ))}
-          </div>
-        </div>
-      </section>
+    {/* Desktop Grid (hidden on mobile) */}
+    <div className="hidden md:grid home-reviews-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+      {reviews.map((review) => (
+        <ReviewCard key={review.id} {...review} />
+      ))}
+    </div>
+  </div>
+</section>
     </div>
   );
-};
+};  
