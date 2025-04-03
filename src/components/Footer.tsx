@@ -47,8 +47,8 @@ export const Footer: React.FC = () => {
         {/* Copyright and Developer Section */}
         <div className="border-t border-pink-300 pt-4 text-center text-pink-100 text-xs">
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2">
-            <p className="text-center">© 2025 crochets</p>
-            <span className="hidden sm:inline">•</span>
+            <p className="text-center">© 2025 crochets  • all rights reserved •</p>
+            {/* <span className="hidden sm:inline">• all rights reserved •</span> */}
             <p className="text-center">
               Developed by{" "}
               <a
