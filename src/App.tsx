@@ -17,14 +17,82 @@ interface HistoryState {
   prevSection?: string;
 }
 
+// New PageUpButton component
+const PageUpButton: React.FC = () => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button when page is scrolled down 300px
+      setVisible(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  return (
+    <button
+      onClick={scrollToTop}
+      className={`fixed bottom-6 right-6 bg-pink-600 hover:bg-pink-700 text-white rounded-full p-3 shadow-lg transition-all duration-300 z-50 ${
+        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12 pointer-events-none'
+      }`}
+      aria-label="Scroll to top"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M5 15l7-7 7 7"
+        />
+      </svg>
+    </button>
+  );
+};
+
+const CART_STORAGE_KEY = 'crochet_shop_cart';
+
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [cartNotification, setCartNotification] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const mainRef = useRef<HTMLElement>(null);
+  
+  // Initialize cart from localStorage
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+      return [];
+    }
+  });
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
+    }
+  }, [cart]);
 
   // Add history state management
   useEffect(() => {
@@ -118,13 +186,15 @@ const App: React.FC = () => {
     const existingItem = cart.find(item => item.id === product.id);
     
     if (existingItem) {
-      setCart(cart.map(item => 
+      const updatedCart = cart.map(item => 
         item.id === product.id 
           ? { ...item, quantity: item.quantity + 1 } 
           : item
-      ));
+      );
+      setCart(updatedCart);
     } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
+      const updatedCart = [...cart, { ...product, quantity: 1 }];
+      setCart(updatedCart);
     }
     
     setCartNotification(true);
@@ -134,7 +204,8 @@ const App: React.FC = () => {
   };
 
   const removeFromCart = (productId: number) => {
-    setCart(cart.filter(item => item.id !== productId));
+    const updatedCart = cart.filter(item => item.id !== productId);
+    setCart(updatedCart);
   };
 
   const updateQuantity = (productId: number, newQuantity: number) => {
@@ -143,11 +214,12 @@ const App: React.FC = () => {
       return;
     }
     
-    setCart(cart.map(item => 
+    const updatedCart = cart.map(item => 
       item.id === productId 
         ? { ...item, quantity: newQuantity } 
         : item
-    ));
+    );
+    setCart(updatedCart);
   };
 
   const viewProductDetails = (product: Product) => {
@@ -204,7 +276,7 @@ const App: React.FC = () => {
           <ProductsSection 
             addToCart={addToCart} 
             onViewProductDetails={viewProductDetails}
-            goBack={() => setActiveSection('home')} // Added this line
+            goBack={() => setActiveSection('home')}
           />
         )}
   
@@ -236,6 +308,9 @@ const App: React.FC = () => {
       />
   
       <Footer />
+      
+      {/* Add the PageUpButton component */}
+      <PageUpButton />
     </div>
   );
 };
