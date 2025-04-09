@@ -1,10 +1,11 @@
-import React from 'react';
-import { ShoppingBag, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ShoppingBag, ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Navigation, A11y } from 'swiper/modules';
+import { Pagination, Navigation, A11y, EffectCoverflow, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+import 'swiper/css/effect-coverflow';
 import { ProductCard } from '../components/ProductCard';
 import { products } from '../data/products';
 import { Product } from '../types';
@@ -40,34 +41,48 @@ const reviews: Review[] = [
     rating: 5,
     text: "I've purchased multiple items, and each one is more beautiful than the last. Highly recommend these crochet creations!"
   },
-  
 ];
 
 // Review Card Component
 const ReviewCard: React.FC<Review> = ({ name, image, rating, text }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    const timeout = setTimeout(() => setIsVisible(true), 300);
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden group transform transition-all hover:scale-105 max-w-[300px] mx-auto">
-      <div className="w-full aspect-square overflow-hidden relative">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover absolute inset-0 group-hover:scale-110 transition-transform duration-300"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
+    <div className={`bg-white rounded-2xl shadow-lg overflow-hidden group transform transition-all duration-500 hover:scale-105 hover:shadow-xl max-w-[320px] mx-auto ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <div className="relative">
+        <div className="w-full aspect-square overflow-hidden relative">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover absolute inset-0 group-hover:scale-110 transition-transform duration-500"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </div>
+        
+        <div className="absolute top-4 right-4 bg-pink-500 text-white rounded-full p-2 shadow-md transform -rotate-12 group-hover:rotate-0 transition-all duration-300">
+          <Quote size={18} />
+        </div>
       </div>
-      <div className="p-4">
-        <div className="flex justify-center text-yellow-400 mb-2">
+      
+      <div className="p-6 bg-gradient-to-br from-white to-pink-50">
+        <div className="flex justify-center text-yellow-400 mb-3">
           {[...Array(rating)].map((_, i) => (
-            <Star key={i} size={16} fill="currentColor" className="mx-0.5" />
+            <Star key={i} size={18} fill="currentColor" className="mx-0.5 transform group-hover:scale-110 transition-transform duration-300" />
           ))}
         </div>
-        <h4 className="font-semibold text-pink-800 text-center mb-2">{name}</h4>
-        <p className="text-gray-600 text-center text-sm italic line-clamp-3">"{text}"</p>
+        <h4 className="font-bold text-pink-800 text-center mb-2 text-lg">{name}</h4>
+        <p className="text-gray-600 text-center text-sm italic line-clamp-3 leading-relaxed">"{text}"</p>
+        
+        <div className="w-12 h-1 bg-gradient-to-r from-pink-400 to-red-300 mx-auto mt-4 rounded-full transform origin-left group-hover:scale-x-150 transition-transform duration-300"></div>
       </div>
     </div>
   );
 };
-
 
 interface HomeSectionProps {
   setActiveSection: (section: string) => void;
@@ -120,33 +135,51 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
       
-      {/* Featured Section with Mobile Slider */}
-      <section className="home-featured-section py-10 md:py-16 px-4 bg-gradient-to-b from-pink-100 to-white">
-        <div className="container mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative">
+      {/* Featured Section with Enhanced Mobile Slider */}
+      <section className="home-featured-section py-10 md:py-16 px-4 bg-gradient-to-b from-pink-100 to-white relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-16 h-16 md:w-32 md:h-32 bg-pink-200 rounded-full opacity-40 -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-24 h-24 md:w-48 md:h-48 bg-red-100 rounded-full opacity-50 translate-x-1/3 translate-y-1/3"></div>
+        
+        <div className="container mx-auto relative z-10 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative inline-block mx-auto">
             <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Featured Creations</span>
-            <span className="block w-16 md:w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 mx-auto mt-3 md:mt-4"></span>
+            <span className="block w-full h-1 bg-gradient-to-r from-pink-500 to-red-400 mt-3 md:mt-4 rounded-full"></span>
+            <span className="absolute -right-3 -top-3 w-8 h-8 bg-pink-100 rounded-full opacity-70 animate-pulse"></span>
           </h2>
           
           {/* Mobile Slider (visible only on mobile) */}
           <div className="block md:hidden relative">
             <Swiper
-              modules={[Pagination, Navigation, A11y]}
-              spaceBetween={16}
-              slidesPerView={1.1}
+              modules={[Pagination, Navigation, A11y, EffectCoverflow, Autoplay]}
+              effect="coverflow"
+              coverflowEffect={{
+                rotate: 30,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: true
+              }}
+              spaceBetween={0}
+              slidesPerView={1.2}
               centeredSlides={true}
+              loop={true}
+              autoplay={{
+                delay: 5000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+              }}
               pagination={{ 
                 clickable: true,
-                el: '.swiper-custom-pagination',
-                renderBullet: function (className) {
-                  return '<span class="' + className + '"></span>';
-                }
+                el: '.swiper-reviews-pagination',
+                bulletActiveClass: 'swiper-pagination-bullet-active-pink',
+                bulletClass: 'swiper-pagination-bullet-pink',
               }}
               navigation={{
-                prevEl: '.swiper-custom-prev',
-                nextEl: '.swiper-custom-next'
+                prevEl: '.swiper-featured-prev',
+                nextEl: '.swiper-featured-next'
               }}
-              className="featured-mobile-slider"
+              className="featured-mobile-slider py-8"
             >
               {products.slice(0, 3).map((product) => (
                 <SwiperSlide key={product.id} className="pb-10">
@@ -164,15 +197,15 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             {/* Navigation Container */}
             <div className="flex items-center justify-center mt-4">
               {/* Previous Navigation Arrow */}
-              <button className="swiper-custom-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
+              <button className="swiper-featured-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-110 hover:rotate-12">
                 <ChevronLeft size={24}/>
               </button>
 
               {/* Pagination Dots */}
-              <div className="swiper-pink-pagination flex items-center justify-center mx-4 "></div>
+              <div className="swiper-featured-pagination flex items-center justify-center mx-4"></div>
 
               {/* Next Navigation Arrow */}
-              <button className="swiper-custom-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
+              <button className="swiper-featured-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-110 hover:rotate-12">
                 <ChevronRight size={24} />
               </button>
             </div>
@@ -180,22 +213,30 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
 
           {/* Desktop Grid (hidden on mobile) */}
           <div className="hidden md:grid home-featured-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-            {products.slice(0, 3).map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={addToCart}
-                onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
-                isFeature={true}
-                className="home-featured-card"
-              />
+            {products.slice(0, 3).map((product, index) => (
+              <div 
+                key={product.id} 
+                className="transform transition-all duration-700" 
+                style={{ 
+                  transitionDelay: `${index * 150}ms`,
+                  animation: `fadeInUp 0.8s ease-out ${index * 0.2}s both`
+                }}
+              >
+                <ProductCard
+                  product={product}
+                  onAddToCart={addToCart}
+                  onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
+                  isFeature={true}
+                  className="home-featured-card hover:shadow-xl transition-shadow duration-300"
+                />
+              </div>
             ))}
           </div>
           
           <div className="text-center mt-8 md:mt-12">
             <button
               onClick={() => setActiveSection('products')}
-              className="border-2 border-pink-500 text-pink-600 hover:bg-pink-50 px-4 sm:px-6 py-2 rounded-full font-medium transition-colors"
+              className="border-2 border-pink-500 text-pink-600 hover:bg-pink-50 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-medium transition-all hover:shadow-md hover:scale-105"
             >
               View All Products
             </button>
@@ -203,66 +244,104 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
 
-      {/* Reviews Section */}
-<section className="home-reviews-section py-10 md:py-16 px-4 bg-gradient-to-b from-white to-pink-50">
-  <div className="container mx-auto">
-    <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative">
-      <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Customer Reviews</span>
-      <span className="block w-16 md:w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 mx-auto mt-3 md:mt-4"></span>
-    </h2>
-    
-    {/* Mobile Slider (visible only on mobile) */}
-    <div className="block md:hidden relative">
-    <Swiper
-              modules={[Pagination, Navigation, A11y]}
-              spaceBetween={16}
+      {/* Enhanced Reviews Section */}
+      <section className="home-reviews-section py-12 md:py-20 px-4 bg-gradient-to-b from-white to-pink-50 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-1/4 left-0 w-32 h-32 bg-pink-100 rounded-full opacity-60 -translate-x-1/2"></div>
+        <div className="absolute bottom-1/4 right-0 w-40 h-40 bg-red-50 rounded-full opacity-70 translate-x-1/2"></div>
+        <div className="absolute top-3/4 left-1/4 w-16 h-16 bg-pink-200 rounded-full opacity-40"></div>
+        
+        <div className="container mx-auto relative z-10">
+          <div className="flex flex-col items-center mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-4 relative">
+              <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">What Our Customers Say</span>
+            </h2>
+            <p className="text-gray-600 max-w-2xl text-center mb-4">Hear from those who've experienced the warmth and joy of our handmade creations</p>
+            <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 rounded-full"></div>
+          </div>
+          
+          {/* Mobile Slider (visible only on mobile) */}
+          <div className="block md:hidden relative">
+            <Swiper
+              modules={[Pagination, Navigation, A11y, EffectCoverflow, Autoplay]}
+              effect="coverflow"
+              coverflowEffect={{
+                rotate: 20,
+                stretch: 0,
+                depth: 200,
+                modifier: 1,
+                slideShadows: true
+              }}
+              spaceBetween={10}
               slidesPerView={1.1}
               centeredSlides={true}
+              loop={true}
+              autoplay={{
+                delay: 4000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+              }}
               pagination={{ 
                 clickable: true,
-                el: '.swiper-custom-pagination',
-                renderBullet: function (className) {
-                  return '<span class="' + className + '"></span>';
-                }
+                el: '.swiper-featured-pagination',
+                bulletActiveClass: 'swiper-pagination-bullet-active-pink',
+                bulletClass: 'swiper-pagination-bullet-pink',
               }}
               navigation={{
-                prevEl: '.swiper-custom-prev',
-                nextEl: '.swiper-custom-next'
+                prevEl: '.swiper-reviews-prev',
+                nextEl: '.swiper-reviews-next'
               }}
-              className="featured-mobile-slider"
+              className="reviews-mobile-slider py-8"
             >
-        {reviews.map((review) => (
-          <SwiperSlide key={review.id} className="pb-10">
-            <ReviewCard {...review} />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+              {reviews.map((review) => (
+                <SwiperSlide key={review.id} className="pb-10">
+                  <ReviewCard {...review} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
 
-      {/* Navigation Container */}
-      <div className="flex items-center justify-center mt-4">
-        {/* Previous Navigation Arrow */}
-        <button className="swiper-custom-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
-          <ChevronLeft size={24}/>
-        </button>
-        
-        {/* Pagination Dots */}
-        <div className="swiper-pink-pagination flex items-center justify-center mx-4"></div>
-        
-        {/* Next Navigation Arrow */}
-        <button className="swiper-custom-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-105">
-          <ChevronRight size={24} />
-        </button>
-      </div>
-    </div>
+            {/* Navigation Container */}
+            <div className="flex items-center justify-center mt-4">
+              {/* Previous Navigation Arrow */}
+              <button className="swiper-reviews-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-110 hover:-rotate-12">
+                <ChevronLeft size={24}/>
+              </button>
+              
+              {/* Pagination Dots */}
+              <div className="swiper-reviews-pagination flex items-center justify-center mx-4"></div>
+              
+              {/* Next Navigation Arrow */}
+              <button className="swiper-reviews-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-110 hover:-rotate-12">
+                <ChevronRight size={24} />
+              </button>
+            </div>
+          </div>
 
-    {/* Desktop Grid (hidden on mobile) */}
-    <div className="hidden md:grid home-reviews-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-      {reviews.map((review) => (
-        <ReviewCard key={review.id} {...review} />
-      ))}
-    </div>
-  </div>
-</section>
+          {/* Desktop Grid with staggered animation (hidden on mobile) */}
+          <div className="hidden md:grid home-reviews-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+            {reviews.map((review, index) => (
+              <div 
+                key={review.id} 
+                className="transform transition-all duration-700"
+                style={{ 
+                  transitionDelay: `${index * 200}ms`,
+                  animation: `fadeInUp 0.8s ease-out ${index * 0.3}s both`
+                }}
+              >
+                <ReviewCard {...review} />
+              </div>
+            ))}
+          </div>
+          
+          {/* Optional: Add a "See More Reviews" button */}
+          <div className="text-center mt-10 md:mt-16">
+            <button className="inline-flex items-center bg-white border-2 border-pink-400 text-pink-600 hover:bg-pink-50 px-6 py-3 rounded-full font-medium transition-all hover:shadow-md hover:scale-105 group">
+              <span>See More Reviews</span>
+              <ChevronRight size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
-};  
+};
