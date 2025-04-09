@@ -142,7 +142,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         <div className="absolute bottom-0 right-0 w-24 h-24 md:w-48 md:h-48 bg-red-100 rounded-full opacity-50 translate-x-1/3 translate-y-1/3"></div>
         
         <div className="container mx-auto relative z-10 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative inline-block mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative inline-block">
             <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Featured Creations</span>
             <span className="block w-full h-1 bg-gradient-to-r from-pink-500 to-red-400 mt-3 md:mt-4 rounded-full"></span>
             <span className="absolute -right-3 -top-3 w-8 h-8 bg-pink-100 rounded-full opacity-70 animate-pulse"></span>
@@ -162,7 +162,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
               }}
               spaceBetween={0}
               slidesPerView={1.2}
-              centeredSlides={true}
+              centeredSlides={false}
               loop={true}
               autoplay={{
                 delay: 5000,
@@ -171,7 +171,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
               }}
               pagination={{ 
                 clickable: true,
-                el: '.swiper-reviews-pagination',
+                el: '.swiper-featured-pagination',
                 bulletActiveClass: 'swiper-pagination-bullet-active-pink',
                 bulletClass: 'swiper-pagination-bullet-pink',
               }}
@@ -188,7 +188,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
                     onAddToCart={addToCart}
                     onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
                     isFeature={true}
-                    className="home-featured-card"
+                    className="home-featured-card text-left"
                   />
                 </SwiperSlide>
               ))}
@@ -211,7 +211,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             </div>
           </div>
 
-          {/* Desktop Grid (hidden on mobile) */}
+          {/* Desktop Grid (hidden on mobile) - Left aligned products */}
           <div className="hidden md:grid home-featured-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
             {products.slice(0, 3).map((product, index) => (
               <div 
@@ -227,7 +227,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
                   onAddToCart={addToCart}
                   onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
                   isFeature={true}
-                  className="home-featured-card hover:shadow-xl transition-shadow duration-300"
+                  className="home-featured-card hover:shadow-xl transition-shadow duration-300 text-left"
                 />
               </div>
             ))}
@@ -283,7 +283,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
               }}
               pagination={{ 
                 clickable: true,
-                el: '.swiper-featured-pagination',
+                el: '.swiper-reviews-pagination',
                 bulletActiveClass: 'swiper-pagination-bullet-active-pink',
                 bulletClass: 'swiper-pagination-bullet-pink',
               }}
@@ -342,6 +342,48 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
           </div>
         </div>
       </section>
+      
+      {/* Add custom styles for pagination */}
+      <style >{`
+        /* Custom pagination styles */
+        .swiper-pagination-bullet {
+          width: 10px;
+          height: 10px;
+          background-color: rgba(236, 72, 153, 0.3); /* Pink-500 with opacity */
+          opacity: 1;
+        }
+        
+        .swiper-pagination-bullet-active {
+          background-color: rgb(236, 72, 153); /* Pink-500 */
+          transform: scale(1.2);
+        }
+        
+        .swiper-pagination-bullet-pink {
+          width: 10px;
+          height: 10px;
+          background-color: rgba(236, 72, 153, 0.3); /* Pink-500 with opacity */
+          opacity: 1;
+        }
+        
+        .swiper-pagination-bullet-active-pink {
+          background-color: rgb(236, 72, 153); /* Pink-500 */
+          transform: scale(1.2);
+        }
+        
+        .swiper-featured-pagination .swiper-pagination-bullet,
+        .swiper-reviews-pagination .swiper-pagination-bullet {
+          width: 10px;
+          height: 10px;
+          background-color: rgba(236, 72, 153, 0.3); /* Pink-500 with opacity */
+          opacity: 1;
+        }
+        
+        .swiper-featured-pagination .swiper-pagination-bullet-active,
+        .swiper-reviews-pagination .swiper-pagination-bullet-active {
+          background-color: rgb(236, 72, 153); /* Pink-500 */
+          transform: scale(1.2);
+        }
+      `}</style>
     </div>
   );
 };
