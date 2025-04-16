@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useRef} from 'react';
+import { ArrowLeft, ShoppingCart, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { Product } from '../types';
 
 // Extended product type with multiple images
@@ -12,13 +12,17 @@ interface ProductDetailsPageProps {
   addToCart: (product: Product) => void;
   goBack: () => void;
   goToCart: () => void;
+  isFavorite: boolean;
+  toggleFavorite: () => void;
 }
 
 export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ 
   product, 
   addToCart, 
   goBack,
-  goToCart 
+  goToCart,
+  isFavorite,
+  toggleFavorite
 }) => {
   // State to track the current image index and manage transitions
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -247,7 +251,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
               )}
             </div>
 
-            {/* Rest of the component remains the same as before */}
+            {/* Product Details Section */}
             <div className="md:w-1/2 p-6 md:p-8">
               <div className="text-sm font-medium text-pink-500 mb-2">{product.category}</div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">{product.name}</h1>
@@ -283,6 +287,17 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                 >
                   Buy Now
                 </button>
+                <button 
+                  onClick={toggleFavorite} 
+                  className={`${
+                    isFavorite 
+                      ? "bg-pink-600 text-white" 
+                      : "bg-white border border-pink-300 text-pink-600 hover:bg-pink-50"
+                  } py-3 px-6 rounded-lg text-sm font-medium transition-colors flex items-center justify-center`}
+                >
+                  <Heart size={18} className="mr-2" fill={isFavorite ? "white" : "none"} />
+                  {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+                </button>
               </div>
             </div>
           </div>
@@ -291,5 +306,3 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
     </div>
   );
 };
-
-
