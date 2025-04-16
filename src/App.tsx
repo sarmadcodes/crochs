@@ -5,6 +5,7 @@ import { CartNotification } from './components/CartNotification';
 import { HomeSection } from './sections/HomeSection';
 import { ProductsSection } from './sections/ProductsSection';
 import { CartSection } from './sections/CartSection';
+import { FavoritesSection } from './components/FavoritesSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
 import { Product, CartItem } from './types';
 import { products } from './data/products'; // Import products directly
@@ -65,6 +66,7 @@ const PageUpButton: React.FC = () => {
 };
 
 const CART_STORAGE_KEY = 'crochet_shop_cart';
+const FAVORITES_STORAGE_KEY = 'crochet_shop_favorites';
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -85,6 +87,17 @@ const App: React.FC = () => {
     }
   });
 
+  // Initialize favorites from localStorage
+  const [favorites, setFavorites] = useState<number[]>(() => {
+    try {
+      const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
+      return savedFavorites ? JSON.parse(savedFavorites) : [];
+    } catch (error) {
+      console.error('Error loading favorites from localStorage:', error);
+      return [];
+    }
+  });
+
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     try {
@@ -93,6 +106,15 @@ const App: React.FC = () => {
       console.error('Error saving cart to localStorage:', error);
     }
   }, [cart]);
+
+  // Save favorites to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+    } catch (error) {
+      console.error('Error saving favorites to localStorage:', error);
+    }
+  }, [favorites]);
 
   // Add history state management
   useEffect(() => {
@@ -109,6 +131,8 @@ const App: React.FC = () => {
       setActiveSection('cart');
     } else if (path.includes('/products')) {
       setActiveSection('products');
+    } else if (path.includes('/favorites')) {
+      setActiveSection('favorites');
     } else {
       setActiveSection('home');
     }
@@ -148,6 +172,9 @@ const App: React.FC = () => {
     } else if (activeSection === 'cart') {
       url = '/cart';
       title = 'Shopping Cart | Crochet Shop';
+    } else if (activeSection === 'favorites') {
+      url = '/favorites';
+      title = 'My Favorites | Crochet Shop';
     } else if (activeSection === 'product-details' && selectedProduct) {
       url = `/product/${selectedProduct.id}`;
       title = `${selectedProduct.name} | Crochet Shop`;
@@ -222,6 +249,20 @@ const App: React.FC = () => {
     setCart(updatedCart);
   };
 
+  const toggleFavorite = (productId: number) => {
+    setFavorites(prevFavorites => {
+      if (prevFavorites.includes(productId)) {
+        return prevFavorites.filter(id => id !== productId);
+      } else {
+        return [...prevFavorites, productId];
+      }
+    });
+  };
+
+  const isProductFavorite = (productId: number) => {
+    return favorites.includes(productId);
+  };
+
   const viewProductDetails = (product: Product) => {
     setSelectedProduct(product);
     setActiveSection('product-details');
@@ -252,7 +293,7 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-pink-100">
-      <Header 
+      <Header
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         mobileMenuOpen={mobileMenuOpen}
@@ -261,6 +302,7 @@ const App: React.FC = () => {
         getTotalItems={getTotalItems}
         products={products}
         onSelectProduct={viewProductDetails}
+        favorites={favorites}
       />
   
       <main ref={mainRef} className="flex-grow">
@@ -277,6 +319,8 @@ const App: React.FC = () => {
             addToCart={addToCart} 
             onViewProductDetails={viewProductDetails}
             goBack={() => setActiveSection('home')}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
           />
         )}
   
@@ -286,6 +330,8 @@ const App: React.FC = () => {
             addToCart={addToCart}
             goBack={goBackToProducts}
             goToCart={goToCart}
+            isFavorite={selectedProduct ? isProductFavorite(selectedProduct.id) : false}
+            toggleFavorite={() => selectedProduct && toggleFavorite(selectedProduct.id)}
           />
         )}
   
@@ -299,6 +345,17 @@ const App: React.FC = () => {
             getTotalPrice={getTotalPrice}
           />
         )}
+
+        {activeSection === 'favorites' && (
+          <FavoritesSection 
+            favorites={favorites}
+            products={products}
+            setActiveSection={setActiveSection}
+            toggleFavorite={toggleFavorite}
+            addToCart={addToCart}
+            onViewProductDetails={viewProductDetails}
+          />
+        )}
       </main>
   
       <CartNotification 
@@ -309,7 +366,6 @@ const App: React.FC = () => {
   
       <Footer />
       
-      {/* Add the PageUpButton component */}
       <PageUpButton />
     </div>
   );
