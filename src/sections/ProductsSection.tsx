@@ -8,6 +8,8 @@ interface ProductsSectionProps {
   addToCart: (product: Product) => void;
   onViewProductDetails: (product: Product) => void;
   goBack: () => void;
+  favorites: number[];
+  toggleFavorite: (productId: number) => void;
 }
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({ 
