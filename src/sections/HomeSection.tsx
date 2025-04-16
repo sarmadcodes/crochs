@@ -135,18 +135,21 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
       
-      {/* Featured Section with Enhanced Mobile Slider */}
-      <section className="home-featured-section py-10 md:py-16 px-4 bg-gradient-to-b from-pink-100 to-white relative overflow-hidden">
+      {/* Featured Section with Enhanced Mobile Slider - Now Centered like Reviews Section */}
+      <section className="home-featured-section py-12 md:py-20 px-4 bg-gradient-to-b from-pink-100 to-white relative overflow-hidden">
         {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-16 h-16 md:w-32 md:h-32 bg-pink-200 rounded-full opacity-40 -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-24 h-24 md:w-48 md:h-48 bg-red-100 rounded-full opacity-50 translate-x-1/3 translate-y-1/3"></div>
+        <div className="absolute top-1/4 left-0 w-32 h-32 bg-pink-100 rounded-full opacity-60 -translate-x-1/2"></div>
+        <div className="absolute bottom-1/4 right-0 w-40 h-40 bg-red-50 rounded-full opacity-70 translate-x-1/2"></div>
+        <div className="absolute top-3/4 left-1/4 w-16 h-16 bg-pink-200 rounded-full opacity-40"></div>
         
-        <div className="container mx-auto relative z-10 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 relative inline-block">
-            <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Featured Creations</span>
-            <span className="block w-full h-1 bg-gradient-to-r from-pink-500 to-red-400 mt-3 md:mt-4 rounded-full"></span>
-            <span className="absolute -right-3 -top-3 w-8 h-8 bg-pink-100 rounded-full opacity-70 animate-pulse"></span>
-          </h2>
+        <div className="container mx-auto relative z-10">
+          <div className="flex flex-col items-center mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-4 relative">
+              <span className="bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">Featured Creations</span>
+            </h2>
+            <p className="text-gray-600 max-w-2xl text-center mb-4">Discover our most loved handmade creations</p>
+            <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 rounded-full"></div>
+          </div>
           
           {/* Mobile Slider (visible only on mobile) */}
           <div className="block md:hidden relative">
@@ -154,15 +157,15 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
               modules={[Pagination, Navigation, A11y, EffectCoverflow, Autoplay]}
               effect="coverflow"
               coverflowEffect={{
-                rotate: 30,
+                rotate: 20,
                 stretch: 0,
-                depth: 100,
+                depth: 200,
                 modifier: 1,
                 slideShadows: true
               }}
-              spaceBetween={0}
-              slidesPerView={1.2}
-              centeredSlides={false}
+              spaceBetween={10}
+              slidesPerView={1.1}
+              centeredSlides={true}
               loop={true}
               autoplay={{
                 delay: 5000,
@@ -183,13 +186,15 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             >
               {products.slice(0, 3).map((product) => (
                 <SwiperSlide key={product.id} className="pb-10">
-                  <ProductCard
-                    product={product}
-                    onAddToCart={addToCart}
-                    onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
-                    isFeature={true}
-                    className="home-featured-card text-left"
-                  />
+                  <div className="max-w-[320px] mx-auto">
+                    <ProductCard
+                      product={product}
+                      onAddToCart={addToCart}
+                      onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
+                      isFeature={true}
+                      className="home-featured-card text-left"
+                    />
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -197,7 +202,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             {/* Navigation Container */}
             <div className="flex items-center justify-center mt-4">
               {/* Previous Navigation Arrow */}
-              <button className="swiper-featured-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-110 hover:rotate-12">
+              <button className="swiper-featured-prev bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-110 hover:-rotate-12">
                 <ChevronLeft size={24}/>
               </button>
 
@@ -205,40 +210,43 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
               <div className="swiper-featured-pagination flex items-center justify-center mx-4"></div>
 
               {/* Next Navigation Arrow */}
-              <button className="swiper-featured-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-110 hover:rotate-12">
+              <button className="swiper-featured-next bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white rounded-full p-2 shadow-md transition-all transform hover:scale-110 hover:-rotate-12">
                 <ChevronRight size={24} />
               </button>
             </div>
           </div>
 
-          {/* Desktop Grid (hidden on mobile) - Left aligned products */}
-          <div className="hidden md:grid home-featured-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+          {/* Desktop Grid (hidden on mobile) - Now center-aligned products */}
+          <div className="hidden md:grid home-featured-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
             {products.slice(0, 3).map((product, index) => (
               <div 
                 key={product.id} 
-                className="transform transition-all duration-700" 
+                className="transform transition-all duration-700 flex justify-center" 
                 style={{ 
                   transitionDelay: `${index * 150}ms`,
                   animation: `fadeInUp 0.8s ease-out ${index * 0.2}s both`
                 }}
               >
-                <ProductCard
-                  product={product}
-                  onAddToCart={addToCart}
-                  onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
-                  isFeature={true}
-                  className="home-featured-card hover:shadow-xl transition-shadow duration-300 text-left"
-                />
+                <div className="max-w-[320px]">
+                  <ProductCard
+                    product={product}
+                    onAddToCart={addToCart}
+                    onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
+                    isFeature={true}
+                    className="home-featured-card hover:shadow-xl transition-shadow duration-300 text-left"
+                  />
+                </div>
               </div>
             ))}
           </div>
           
-          <div className="text-center mt-8 md:mt-12">
+          <div className="text-center mt-10 md:mt-16">
             <button
               onClick={() => setActiveSection('products')}
-              className="border-2 border-pink-500 text-pink-600 hover:bg-pink-50 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-medium transition-all hover:shadow-md hover:scale-105"
+              className="inline-flex items-center border-2 border-pink-500 text-pink-600 hover:bg-pink-50 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-medium transition-all hover:shadow-md hover:scale-105 group"
             >
-              View All Products
+              <span>View All Products</span>
+              <ChevronRight size={16} className="ml-2 transform group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
