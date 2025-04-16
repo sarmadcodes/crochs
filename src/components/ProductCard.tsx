@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Heart } from 'lucide-react';
 import { Product } from '../types';
 
 interface ProductCardProps {
@@ -8,6 +8,8 @@ interface ProductCardProps {
   onViewDetails: () => void;
   className?: string;
   isFeature?: boolean;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ 
@@ -15,7 +17,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onAddToCart, 
   onViewDetails,
   className = '',
-  isFeature = false
+  isFeature = false,
+  isFavorite = false,
+  onToggleFavorite
 }) => {
   return (
     <div className={`bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl transform hover:-translate-y-1 h-full flex flex-col ${className}`}>
@@ -28,6 +32,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           alt={product.name} 
           className="w-full h-full object-cover transition-all hover:scale-105"
         />
+        {onToggleFavorite && (
+          <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              onToggleFavorite(); 
+            }} 
+            className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-300 ${isFavorite ? 'bg-pink-500 text-white' : 'bg-white/80 hover:bg-white text-pink-500 hover:text-pink-600'}`} 
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Heart size={16} fill={isFavorite ? "white" : "none"} className={isFavorite ? "animate-heartBeat" : ""} />
+          </button>
+        )}
       </div>
       <div className="p-2 sm:p-3 md:p-5 flex flex-col flex-1">
         <div 
@@ -59,3 +75,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </div>
   );
 };
+
+/* Add this to your CSS file or styled-components */
+/* 
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.3); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.3); }
+  60% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.animate-heartBeat {
+  animation: heartBeat 1s ease-in-out;
+}
+*/
