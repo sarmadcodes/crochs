@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Menu, X, ShoppingCart, Search } from "lucide-react";
+import { Menu, X, ShoppingCart, Search, Heart } from "lucide-react";
 import { SearchBar } from "./SearchBar";
 import { Product } from "../types";
 
@@ -7,11 +7,12 @@ interface HeaderProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
   mobileMenuOpen: boolean;
-  setMobileMenuOpen: (open: boolean) => void;
+  setMobileMenuOpen: (isOpen: boolean) => void;
   scrolled: boolean;
   getTotalItems: () => number;
   products: Product[];
   onSelectProduct: (product: Product) => void;
+  favorites: number[]; // Add this new prop
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,7 +23,8 @@ export const Header: React.FC<HeaderProps> = ({
   scrolled,
   getTotalItems,
   products,
-  onSelectProduct
+  onSelectProduct,
+  favorites
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -105,6 +107,22 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Right Column - Search & Cart */}
             <div className="flex justify-end items-center space-x-3">
               <button
+                onClick={() => setActiveSection("favorites")}
+                className={`${
+                  activeSection === "favorites"
+                    ? "bg-gradient-to-r from-pink-400 to-pink-600"
+                    : "bg-gradient-to-r from-pink-400 to-red-300 hover:from-pink-500 hover:to-red-400"
+                } text-white p-2 rounded-full transition-all transform hover:scale-110 active:scale-95 relative`}
+              >
+                <Heart size={20} className={favorites.length > 0 ? "animate-pulse-subtle" : ""} />
+                {favorites.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-popup">
+                    {favorites.length}
+                  </span>
+                )}
+              </button>
+              
+              <button
                 onClick={() => setMobileSearchActive(true)}
                 className="text-pink-700 p-2 transition-all duration-300 transform hover:scale-110"
               >
@@ -163,6 +181,25 @@ export const Header: React.FC<HeaderProps> = ({
                 onSelectProduct={onSelectProduct} 
               />
               
+              {/* Desktop Favorites Button */}
+              <div className="relative">
+                <button
+                  onClick={() => setActiveSection("favorites")}
+                  className={`${
+                    activeSection === "favorites"
+                      ? "bg-gradient-to-r from-pink-400 to-pink-600"
+                      : "bg-gradient-to-r from-pink-400 to-red-300 hover:from-pink-500 hover:to-red-400"
+                  } text-white p-2 rounded-full transition-all transform hover:scale-110 active:scale-95 relative`}
+                >
+                  <Heart size={20} className={favorites.length > 0 ? "animate-pulse-subtle" : ""} />
+                  {favorites.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-popup">
+                      {favorites.length}
+                    </span>
+                  )}
+                </button>
+              </div>
+              
               {/* Desktop Cart Button */}
               <div className="relative">
                 <button
@@ -193,7 +230,7 @@ export const Header: React.FC<HeaderProps> = ({
           className="md:hidden bg-white/95 py-4 shadow-lg animate-slideDown fixed top-[65px] left-0 w-full"
         >
           <div className="container mx-auto px-4 flex flex-col space-y-4">
-            {["home", "crochets"].map((section) => (
+            {["home", "crochets", "favorites"].map((section) => (
               <button
                 key={section}
                 onClick={() => {
