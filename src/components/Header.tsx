@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Menu, X, ShoppingCart, Search, Heart } from "lucide-react";
+import { Menu, X, ShoppingCart, Search, Heart, Settings } from "lucide-react";
 import { SearchBar } from "./SearchBar";
 import { Product } from "../types";
 
@@ -29,6 +29,29 @@ export const Header: React.FC<HeaderProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [mobileSearchActive, setMobileSearchActive] = useState(false);
+  const [showAdminAccess, setShowAdminAccess] = useState(false);
+
+  // Admin access toggle with secret pattern - triple click on logo
+  const logoClickCount = useRef(0);
+  const logoClickTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handleLogoClick = () => {
+    setActiveSection("home");
+    
+    // Admin access logic - track triple clicks
+    logoClickCount.current += 1;
+    
+    if (logoClickTimer.current) {
+      clearTimeout(logoClickTimer.current);
+    }
+    
+    logoClickTimer.current = setTimeout(() => {
+      if (logoClickCount.current >= 3) {
+        setShowAdminAccess(prev => !prev);
+      }
+      logoClickCount.current = 0;
+    }, 500);
+  };
 
   // Focus input when search becomes active
   useEffect(() => {
@@ -47,6 +70,18 @@ export const Header: React.FC<HeaderProps> = ({
     document.addEventListener("mousedown", handleOutsideClick);
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [mobileMenuOpen, setMobileMenuOpen]);
+
+  // Admin access key combination (Shift + A)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.shiftKey && e.key === 'A') {
+        setShowAdminAccess(prev => !prev);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <header
@@ -112,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Center Column - Logo */}
             <div className="flex justify-center">
               <div
-                onClick={() => setActiveSection("home")}
+                onClick={handleLogoClick}
                 className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 text-2xl"
               >
                 crochets
@@ -152,7 +187,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="hidden md:flex w-full justify-between items-center">
             {/* Logo */}
             <div
-              onClick={() => setActiveSection("home")}
+              onClick={handleLogoClick}
               className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600 cursor-pointer animate-glitter transition-all duration-300 text-2xl"
             >
               crochets
@@ -217,6 +252,21 @@ export const Header: React.FC<HeaderProps> = ({
                   )}
                 </button>
               </div>
+              
+              {/* Admin button - only visible when admin access is shown */}
+              {showAdminAccess && (
+                <button
+                  onClick={() => setActiveSection("admin")}
+                  className={`${
+                    activeSection === "admin"
+                      ? "bg-gradient-to-r from-gray-700 to-gray-900"
+                      : "bg-gradient-to-r from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800"
+                  } text-white p-2 rounded-full transition-all transform hover:scale-110 active:scale-95 relative animate-fadeIn`}
+                  title="Admin Panel"
+                >
+                  <Settings size={20} />
+                </button>
+              )}
             </nav>
           </div>
         </div>
@@ -245,6 +295,25 @@ export const Header: React.FC<HeaderProps> = ({
                 {section.charAt(0).toUpperCase() + section.slice(1)}
               </button>
             ))}
+            
+            {/* Admin access in mobile menu - only visible when admin access is shown */}
+            {showAdminAccess && (
+              <button
+                key="admin"
+                onClick={() => {
+                  setActiveSection("admin");
+                  setMobileMenuOpen(false);
+                }}
+                className={`${
+                  activeSection === "admin"
+                    ? "text-gray-800" 
+                    : "text-gray-600"
+                } text-lg font-medium text-left py-2 hover:text-gray-800 transition-all duration-300 transform hover:translate-x-2 animate-fadeIn flex items-center`}
+              >
+                <Settings size={16} className="mr-2" />
+                Admin
+              </button>
+            )}
           </div>
         </div>
       )}
