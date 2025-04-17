@@ -5,6 +5,7 @@ import { CartNotification } from './components/CartNotification';
 import { HomeSection } from './sections/HomeSection';
 import { ProductsSection } from './sections/ProductsSection';
 import { CartSection } from './sections/CartSection';
+import { CheckoutForm } from './sections/CheckoutForm'; // Import the new CheckoutForm component
 import { FavoritesSection } from './components/FavoritesSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
 import { Product, CartItem } from './types';
@@ -129,6 +130,8 @@ const App: React.FC = () => {
       }
     } else if (path.includes('/cart')) {
       setActiveSection('cart');
+    } else if (path.includes('/checkout')) {
+      setActiveSection('checkout');
     } else if (path.includes('/products')) {
       setActiveSection('products');
     } else if (path.includes('/favorites')) {
@@ -172,6 +175,9 @@ const App: React.FC = () => {
     } else if (activeSection === 'cart') {
       url = '/cart';
       title = 'Shopping Cart | Crochet Shop';
+    } else if (activeSection === 'checkout') {
+      url = '/checkout';
+      title = 'Checkout | Crochet Shop';
     } else if (activeSection === 'favorites') {
       url = '/favorites';
       title = 'My Favorites | Crochet Shop';
@@ -291,6 +297,12 @@ const App: React.FC = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  // Function to clear the cart after successful order
+  const clearCart = () => {
+    setCart([]);
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([]));
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-pink-100">
       <Header
@@ -343,6 +355,15 @@ const App: React.FC = () => {
             removeFromCart={removeFromCart}
             getTotalItems={getTotalItems}
             getTotalPrice={getTotalPrice}
+          />
+        )}
+
+        {activeSection === 'checkout' && (
+          <CheckoutForm
+            cart={cart}
+            getTotalPrice={getTotalPrice}
+            setActiveSection={setActiveSection}
+            clearCart={clearCart}
           />
         )}
 
