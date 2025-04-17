@@ -143,7 +143,9 @@ export const CartSection: React.FC<CartSectionProps> = ({
                           </div>
                         </div>
                         
-                        <button className="w-full bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white py-3 rounded-md font-medium transition-all mt-3">
+                        <button 
+                          onClick={() => setActiveSection('checkout')}
+                          className="w-full bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white py-3 rounded-md font-medium transition-all mt-3">
                           Proceed to Checkout
                         </button>
                       </div>
