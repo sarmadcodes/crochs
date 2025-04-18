@@ -116,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Mobile Layout - Three columns with equal width for perfect centering */}
           <div className="md:hidden w-full grid grid-cols-3 items-center">
             {/* Left Column - Hamburger and Favorites */}
-            <div className="flex justify-start items-center space-x-3">
+            <div className="flex justify-start items-center space-x-4">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -131,13 +131,13 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setActiveSection("favorites")}
                 className={`${
                   activeSection === "favorites"
-                  ? "bg-gradient-to-r from-red-500 to-red-600"
-                  : "bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500"
-              } text-white p-2 rounded-full transition-all transform hover:scale-110 active:scale-95 relative`}
-            >
-                <Heart size={18} className={favorites.length > 0 ? "animate-pulse-subtle" : ""} />
+                  ? "text-pink-500"
+                  : "text-pink-700"
+                } transition-all transform hover:scale-110 active:scale-95 relative`}
+              >
+                <Heart size={20} />
                 {favorites.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-popup">
+                  <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-popup">
                     {favorites.length}
                   </span>
                 )}
@@ -155,31 +155,29 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             
             {/* Right Column - Search & Cart */}
-            <div className="flex justify-end items-center space-x-3">
+            <div className="flex justify-end items-center space-x-4">
               <button
                 onClick={() => setMobileSearchActive(true)}
-                className="text-pink-700 p-2 transition-all duration-300 transform hover:scale-110"
+                className="text-pink-700 transition-transform duration-300 transform hover:scale-110"
               >
-                <Search size={20} className="animate-bounce-subtle" />
+                <Search size={20} />
               </button>
               
-              <div className="relative">
-                <button
-                  onClick={() => setActiveSection("cart")}
-                  className={`${
-                    activeSection === "cart"
-                      ? "bg-gradient-to-r from-red-500 to-red-600"
-                      : "bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500"
-                  } text-white p-2 rounded-full transition-all transform hover:scale-110 active:scale-95 relative`}
-                >
-                  <ShoppingCart size={20} className={getTotalItems() > 0 ? "animate-wiggle" : ""} />
-                  {getTotalItems() > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-popup">
-                      {getTotalItems()}
-                    </span>
-                  )}
-                </button>
-              </div>
+              <button
+                onClick={() => setActiveSection("cart")}
+                className={`${
+                  activeSection === "cart"
+                    ? "text-pink-500"
+                    : "text-pink-700"
+                } transition-all transform hover:scale-110 active:scale-95 relative`}
+              >
+                <ShoppingCart size={20} />
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-popup">
+                    {getTotalItems()}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
 
@@ -215,7 +213,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onSelectProduct={onSelectProduct} 
               />
               
-              {/* Desktop Favorites Button */}
+              {/* Desktop Favorites Button - Keep the gradient background for desktop */}
               <div className="relative">
                 <button
                   onClick={() => setActiveSection("favorites")}
@@ -234,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               </div>
               
-              {/* Desktop Cart Button */}
+              {/* Desktop Cart Button - Keep the gradient background for desktop */}
               <div className="relative">
                 <button
                   onClick={() => setActiveSection("cart")}
