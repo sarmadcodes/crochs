@@ -135,7 +135,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
       
-      {/* Featured Section with Enhanced Mobile Slider - Now Centered like Reviews Section */}
+      {/* Featured Section with Enhanced Mobile Slider - Now with Square Layout on Desktop */}
       <section className="home-featured-section py-12 md:py-20 px-4 bg-gradient-to-b from-pink-100 to-white relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-1/4 left-0 w-32 h-32 bg-pink-100 rounded-full opacity-60 -translate-x-1/2"></div>
@@ -151,7 +151,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 rounded-full"></div>
           </div>
           
-          {/* Mobile Slider (visible only on mobile) */}
+          {/* Mobile Slider (visible only on mobile) - NO CHANGES HERE */}
           <div className="block md:hidden relative">
             <Swiper
               modules={[Pagination, Navigation, A11y, EffectCoverflow, Autoplay]}
@@ -216,8 +216,8 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             </div>
           </div>
 
-          {/* Desktop Grid (hidden on mobile) - Now center-aligned products */}
-          <div className="hidden md:grid home-featured-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+          {/* Desktop Grid (hidden on mobile) - UPDATED FOR SQUARE CARDS */}
+          <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
             {products.slice(0, 3).map((product, index) => (
               <div 
                 key={product.id} 
@@ -227,14 +227,35 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
                   animation: `fadeInUp 0.8s ease-out ${index * 0.2}s both`
                 }}
               >
-                <div className="max-w-[320px]">
-                  <ProductCard
-                    product={product}
-                    onAddToCart={addToCart}
-                    onViewDetails={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}
-                    isFeature={true}
-                    className="home-featured-card hover:shadow-xl transition-shadow duration-300 text-left"
-                  />
+                <div className="w-full aspect-square">
+                  <div className="bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-xl transform hover:-translate-y-1 h-full flex flex-col home-featured-card">
+                    <div className="aspect-square overflow-hidden relative cursor-pointer" onClick={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}>
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-all hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-4 flex flex-col flex-1">
+                      <div className="cursor-pointer mb-3 flex-1" onClick={() => onViewProductDetails ? onViewProductDetails(product) : setActiveSection('products')}>
+                        <div className="text-xs font-medium text-pink-500 mb-1">{product.category}</div>
+                        <h3 className="text-lg font-semibold text-gray-800 truncate">{product.name}</h3>
+                      </div>
+                      <div className="flex justify-between items-center mt-auto">
+                        <span className="text-lg font-bold text-pink-700">${product.price}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(product);
+                          }}
+                          className="bg-pink-100 hover:bg-pink-200 text-pink-700 px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center"
+                        >
+                          <ShoppingBag size={14} className="mr-2" />
+                          <span className="font-semibold">Add to cart</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -252,7 +273,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
 
-      {/* Enhanced Reviews Section */}
+      {/* Enhanced Reviews Section - NO CHANGES HERE */}
       <section className="home-reviews-section py-12 md:py-20 px-4 bg-gradient-to-b from-white to-pink-50 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-1/4 left-0 w-32 h-32 bg-pink-100 rounded-full opacity-60 -translate-x-1/2"></div>
