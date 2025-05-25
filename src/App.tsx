@@ -8,6 +8,8 @@ import { CartSection } from './sections/CartSection';
 import { CheckoutForm } from './sections/CheckoutForm'; // Import the new CheckoutForm component
 import { FavoritesSection } from './components/FavoritesSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
+import { AdminPanel } from './components/AdminPanel';
+
 import { Product, CartItem } from './types';
 import { products } from './data/products'; // Import products directly
 import './styles/animations.css';
@@ -136,6 +138,10 @@ const App: React.FC = () => {
       setActiveSection('products');
     } else if (path.includes('/favorites')) {
       setActiveSection('favorites');
+    } else if (path.includes('/admin')) {
+      setActiveSection('admin');
+    } else if (path.includes('/admin-setup')) {
+      setActiveSection('admin-setup');
     } else {
       setActiveSection('home');
     }
@@ -191,6 +197,12 @@ const App: React.FC = () => {
       if (currentState && currentState.section !== 'product-details') {
         state.prevSection = currentState.section;
       }
+    } else if (activeSection === 'admin') {
+      url = '/admin';
+      title = 'Admin Panel | Crochet Shop';
+    } else if (activeSection === 'admin-setup') {
+      url = '/admin-setup';
+      title = 'Admin Setup | Crochet Shop';
     }
 
     // Only push a new state if we're not handling a popstate event
@@ -377,6 +389,11 @@ const App: React.FC = () => {
             onViewProductDetails={viewProductDetails}
           />
         )}
+
+        {activeSection === 'admin' && (
+          <AdminPanel setActiveSection={setActiveSection} />
+        )}
+        
       </main>
   
       <CartNotification 
