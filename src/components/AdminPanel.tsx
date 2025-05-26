@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   collection, 
   getDocs, 
@@ -32,8 +32,7 @@ import {
   Download,
   Search,
   Filter,
-  Lock,
-  LogOut
+  AlertCircle
 } from 'lucide-react';
 
 interface OrderItem {
@@ -70,181 +69,182 @@ interface AdminPanelProps {
   setActiveSection: (section: string) => void;
 }
 
-// Simple Login Component
-const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  // You can change this password as needed
-  const ADMIN_PASSWORD = 'admin123';
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    // Simulate a brief loading time for better UX
-    setTimeout(() => {
-      if (password === ADMIN_PASSWORD) {
-        // Store login status in memory instead of localStorage
-        onLogin();
-      } else {
-        setError('Invalid password. Please try again.');
-      }
-      setLoading(false);
-    }, 500);
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-red-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-pink-100 rounded-full mb-4">
-            <Lock className="text-pink-600" size={32} />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Admin Login</h1>
-          <p className="text-gray-600">Enter your password to access the admin panel</p>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none"
-              placeholder="Enter admin password"
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-pink-600 to-red-500 text-white py-3 px-4 rounded-lg hover:from-pink-700 hover:to-red-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            {loading ? (
-              <>
-                <RefreshCw className="animate-spin mr-2" size={20} />
-                Signing in...
-              </>
-            ) : (
-              'Sign In'
-            )}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>Default password: <code className="bg-gray-100 px-2 py-1 rounded">admin123</code></p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [updating, setUpdating] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Initialize login state and fetch orders
-  useEffect(() => {
-    setIsLoggedIn(true); // Auto-login for this session
-    fetchOrders();
-  }, []);
-
-  // Fetch orders function with better error handling
-  const fetchOrders = async () => {
+  // Function to fetch orders directly from Firestore
+  const fetchOrders = useCallback(async () => {
     try {
-      setLoading(isInitialLoad);
       setError(null);
+      console.log('Attempting to fetch orders from Firestore...');
       
       const ordersRef = collection(db, 'orders');
       const q = query(ordersRef, orderBy('createdAt', 'desc'));
-      
-      // Use getDocs for a one-time fetch first
       const snapshot = await getDocs(q);
-      const ordersData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Order[];
       
+      console.log('Raw snapshot:', snapshot);
+      console.log('Snapshot docs length:', snapshot.docs.length);
+      
+      const ordersData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log('Document data:', { id: doc.id, ...data });
+        return {
+          id: doc.id,
+          ...data
+        };
+      }) as Order[];
+      
+      console.log('Processed orders data:', ordersData);
       setOrders(ordersData);
-      setIsInitialLoad(false);
-      setLoading(false);
+      console.log(`Successfully fetched ${ordersData.length} orders from database`);
       
-      // Then set up real-time listener
-      const unsubscribe = onSnapshot(
-        q, 
-        (snapshot) => {
-          try {
-            const updatedOrdersData = snapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data()
-            })) as Order[];
-            
-            setOrders(updatedOrdersData);
-            setError(null);
-          } catch (err) {
-            console.error('Error processing real-time orders data:', err);
-            setError('Error processing orders data');
-          }
-        }, 
-        (error) => {
-          console.error('Real-time listener error:', error);
-          setError('Connection to database lost. Data may not be up to date.');
-        }
-      );
-
-      // Return cleanup function
-      return unsubscribe;
-
-    } catch (err) {
-      console.error('Error fetching orders:', err);
-      setError('Failed to fetch orders. Please check your connection and try again.');
+      if (ordersData.length === 0) {
+        console.log('No orders found in database');
+      }
+      
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      console.error('Error details:', {
+        name: error?.name,
+        message: error?.message,
+        code: error?.code
+      });
+      setError(`Failed to fetch orders: ${error?.message || 'Unknown error'}`);
+    } finally {
       setLoading(false);
-      setIsInitialLoad(false);
+      setRefreshing(false);
     }
+  }, []);
+
+  // Manual refresh function
+  const handleRefresh = async () => {
+    console.log('Manual refresh triggered');
+    setRefreshing(true);
+    setLoading(true);
+    await fetchOrders();
   };
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+  // Effect for initial load and setting up real-time listener
+  useEffect(() => {
+    let unsubscribe: (() => void) | null = null;
+    let isMounted = true;
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setOrders([]);
-    setSelectedOrder(null);
-    setActiveSection('home');
-  };
+    const initializeData = async () => {
+      console.log('Initializing admin panel data...');
+      
+      // Always fetch orders first
+      await fetchOrders();
+
+      // Set up real-time listener only if component is still mounted
+      if (isMounted) {
+        try {
+          console.log('Setting up real-time listener...');
+          const ordersRef = collection(db, 'orders');
+          const q = query(ordersRef, orderBy('createdAt', 'desc'));
+          
+          unsubscribe = onSnapshot(q, 
+            (snapshot) => {
+              if (!isMounted) return;
+              
+              console.log('Real-time update received');
+              const ordersData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+              })) as Order[];
+              
+              console.log(`Real-time update: ${ordersData.length} orders`);
+              setOrders(ordersData);
+              setError(null);
+            }, 
+            (error) => {
+              if (!isMounted) return;
+              
+              console.error('Real-time listener error:', error);
+              setError(`Real-time sync error: ${error.message}`);
+              
+              // Fallback to manual fetch on listener error
+              console.log('Falling back to manual fetch due to listener error');
+              fetchOrders();
+            }
+          );
+          
+          console.log('Real-time listener set up successfully');
+          
+        } catch (error) {
+          console.error('Error setting up real-time listener:', error);
+          console.log('Continuing without real-time updates');
+        }
+      }
+    };
+
+    initializeData();
+
+    // Cleanup function
+    return () => {
+      console.log('Cleaning up admin panel...');
+      isMounted = false;
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []); // Remove fetchOrders from dependency array to prevent infinite loop
+
+  // Auto-retry on error
+  useEffect(() => {
+    if (error && orders.length === 0 && !loading) {
+      console.log('Auto-retry triggered due to error with no orders');
+      const retryTimer = setTimeout(() => {
+        console.log('Retrying to fetch orders after error...');
+        fetchOrders();
+      }, 3000);
+
+      return () => clearTimeout(retryTimer);
+    }
+  }, [error, orders.length, loading, fetchOrders]);
+
+  // Force refresh every 30 seconds as backup
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (!refreshing && !loading) {
+        console.log('Periodic refresh check...');
+        fetchOrders();
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(intervalId);
+  }, [fetchOrders, refreshing, loading]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     setUpdating(orderId);
     try {
+      console.log(`Updating order ${orderId} status to ${newStatus}`);
       await updateDoc(doc(db, 'orders', orderId), { 
         status: newStatus,
         updatedAt: Timestamp.now()
       });
+      
+      // Update local state immediately for better UX
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.id === orderId 
+            ? { ...order, status: newStatus as Order['status'] }
+            : order
+        )
+      );
+      
+      console.log(`Successfully updated order ${orderId} status`);
     } catch (error) {
       console.error('Error updating order:', error);
-      alert('Failed to update order status. Please try again.');
+      alert('Failed to update order status');
+      // Refresh orders to get the correct state
+      fetchOrders();
     } finally {
       setUpdating(null);
     }
@@ -253,32 +253,31 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
   const deleteOrder = async (orderId: string) => {
     if (window.confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
       try {
+        console.log(`Deleting order ${orderId}`);
         await deleteDoc(doc(db, 'orders', orderId));
+        
+        // Update local state immediately
+        setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+        
         if (selectedOrder?.id === orderId) {
           setSelectedOrder(null);
         }
+        
+        console.log(`Successfully deleted order ${orderId}`);
       } catch (error) {
         console.error('Error deleting order:', error);
-        alert('Failed to delete order. Please try again.');
+        alert('Failed to delete order');
+        // Refresh orders to get the correct state
+        fetchOrders();
       }
     }
-  };
-
-  const retryFetch = () => {
-    setError(null);
-    fetchOrders();
-  };
-
-  const manualRefresh = () => {
-    setError(null);
-    fetchOrders();
   };
 
   const filteredOrders = orders.filter(order => {
     const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
     const matchesSearch = searchTerm === '' || 
-      order.customer?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.id.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesStatus && matchesSearch;
@@ -316,7 +315,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
         minute: '2-digit'
       });
     } catch (error) {
-      return 'Invalid date';
+      console.error('Error formatting date:', error);
+      return 'Invalid Date';
     }
   };
 
@@ -338,18 +338,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
     return stats;
   };
 
-  // Show login screen if not logged in
-  if (!isLoggedIn) {
-    return <AdminLogin onLogin={handleLogin} />;
-  }
-
-  if (loading && isInitialLoad) {
+  if (loading) {
     return (
       <div className="pt-24 pb-16 min-h-screen">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center h-64">
             <RefreshCw className="animate-spin mr-2" size={24} />
-            <span>Loading orders...</span>
+            <span>Loading orders from database...</span>
           </div>
         </div>
       </div>
@@ -373,36 +368,44 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
               Admin Panel
             </h1>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={manualRefresh}
-              className="flex items-center px-4 py-2 text-gray-600 hover:text-pink-600 transition-colors border border-gray-300 rounded-lg hover:border-pink-300"
-              title="Refresh Orders"
-            >
-              <RefreshCw size={20} className="mr-2" />
-              Refresh
-            </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center px-4 py-2 text-gray-600 hover:text-red-600 transition-colors"
-            >
-              <LogOut size={20} className="mr-2" />
-              Logout
-            </button>
+          
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="flex items-center px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`mr-2 ${refreshing ? 'animate-spin' : ''}`} size={16} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </button>
+        </div>
+
+        {/* Debug Info (remove in production) */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="text-sm text-blue-800">
+            <p><strong>Debug Info:</strong></p>
+            <p>Orders in state: {orders.length}</p>
+            <p>Loading: {loading.toString()}</p>
+            <p>Error: {error || 'None'}</p>
+            <p>Filtered orders: {filteredOrders.length}</p>
           </div>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center justify-between">
-            <span>{error}</span>
-            <button
-              onClick={retryFetch}
-              className="flex items-center px-3 py-1 bg-red-100 hover:bg-red-200 rounded text-sm transition-colors"
-            >
-              <RefreshCw size={16} className="mr-1" />
-              Retry
-            </button>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <AlertCircle className="text-red-500 mr-2" size={20} />
+              <div>
+                <p className="text-red-800 font-medium">Error loading orders</p>
+                <p className="text-red-600 text-sm">{error}</p>
+                <button
+                  onClick={fetchOrders}
+                  className="text-red-700 underline text-sm mt-1 hover:no-underline"
+                >
+                  Try again
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -503,7 +506,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                 {filteredOrders.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="text-center p-8 text-gray-500">
-                      {orders.length === 0 ? 'No orders found' : 'No orders match your filters'}
+                      {orders.length === 0 ? (
+                        <div>
+                          <p>No orders found in database</p>
+                          <button
+                            onClick={fetchOrders}
+                            className="text-pink-600 hover:text-pink-700 underline mt-2"
+                          >
+                            Refresh to check again
+                          </button>
+                        </div>
+                      ) : (
+                        'No orders match your filters'
+                      )}
                     </td>
                   </tr>
                 ) : (
@@ -557,7 +572,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                       </td>
                       <td className="p-4">
                         <span className="text-sm text-gray-600">
-                          {formatDate(order.createdAt)}
+                          {order.createdAt ? formatDate(order.createdAt) : 'N/A'}
                         </span>
                       </td>
                       <td className="p-4">
@@ -638,7 +653,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                       <p><strong>Order ID:</strong> {selectedOrder.id}</p>
                       <p className="flex items-center">
                         <Calendar size={16} className="mr-2" />
-                        {formatDate(selectedOrder.createdAt)}
+                        {selectedOrder.createdAt ? formatDate(selectedOrder.createdAt) : 'N/A'}
                       </p>
                       <p className="flex items-center">
                         {getStatusIcon(selectedOrder.status)}
