@@ -87,8 +87,7 @@ const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     // Simulate a brief loading time for better UX
     setTimeout(() => {
       if (password === ADMIN_PASSWORD) {
-        // Store login status in sessionStorage (cleared when browser is closed)
-        sessionStorage.setItem('adminLoggedIn', 'true');
+        // Store login status in memory instead of localStorage
         onLogin();
       } else {
         setError('Invalid password. Please try again.');
@@ -157,108 +156,79 @@ const AdminLogin: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
 export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [updating, setUpdating] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Check login status on component mount
+  // Initialize login state and fetch orders
   useEffect(() => {
-    const loginStatus = sessionStorage.getItem('adminLoggedIn');
-    if (loginStatus === 'true') {
-      setIsLoggedIn(true);
-    } else {
-      setLoading(false);
-    }
+    setIsLoggedIn(true); // Auto-login for this session
+    fetchOrders();
   }, []);
 
-  // Fetch orders with better error handling
-  useEffect(() => {
-    if (!isLoggedIn) return;
-
-    let isMounted = true;
-    
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const ordersRef = collection(db, 'orders');
-        const q = query(ordersRef, orderBy('createdAt', 'desc'));
-        
-        // Set up real-time listener with better error handling
-        const unsubscribe = onSnapshot(
-          q, 
-          (snapshot) => {
-            if (!isMounted) return;
+  // Fetch orders function with better error handling
+  const fetchOrders = async () => {
+    try {
+      setLoading(isInitialLoad);
+      setError(null);
+      
+      const ordersRef = collection(db, 'orders');
+      const q = query(ordersRef, orderBy('createdAt', 'desc'));
+      
+      // Use getDocs for a one-time fetch first
+      const snapshot = await getDocs(q);
+      const ordersData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Order[];
+      
+      setOrders(ordersData);
+      setIsInitialLoad(false);
+      setLoading(false);
+      
+      // Then set up real-time listener
+      const unsubscribe = onSnapshot(
+        q, 
+        (snapshot) => {
+          try {
+            const updatedOrdersData = snapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            })) as Order[];
             
-            try {
-              const ordersData = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-              })) as Order[];
-              
-              setOrders(ordersData);
-              setError(null);
-            } catch (err) {
-              console.error('Error processing orders data:', err);
-              setError('Error processing orders data');
-            } finally {
-              setLoading(false);
-            }
-          }, 
-          (error) => {
-            if (!isMounted) return;
-            
-            console.error('Error fetching orders:', error);
-            setError('Failed to fetch orders. Please check your connection and try again.');
-            setLoading(false);
-            
-            // Fallback to one-time fetch if real-time fails
-            getDocs(q).then(snapshot => {
-              if (!isMounted) return;
-              
-              const ordersData = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-              })) as Order[];
-              
-              setOrders(ordersData);
-              setError(null);
-            }).catch(err => {
-              console.error('Fallback fetch also failed:', err);
-            });
+            setOrders(updatedOrdersData);
+            setError(null);
+          } catch (err) {
+            console.error('Error processing real-time orders data:', err);
+            setError('Error processing orders data');
           }
-        );
+        }, 
+        (error) => {
+          console.error('Real-time listener error:', error);
+          setError('Connection to database lost. Data may not be up to date.');
+        }
+      );
 
-        return unsubscribe;
-      } catch (err) {
-        if (!isMounted) return;
-        
-        console.error('Error setting up orders listener:', err);
-        setError('Failed to connect to database');
-        setLoading(false);
-      }
-    };
+      // Return cleanup function
+      return unsubscribe;
 
-    const unsubscribe = fetchOrders();
-
-    return () => {
-      isMounted = false;
-      if (unsubscribe && typeof unsubscribe === 'function') {
-        unsubscribe();
-      }
-    };
-  }, [isLoggedIn]);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError('Failed to fetch orders. Please check your connection and try again.');
+      setLoading(false);
+      setIsInitialLoad(false);
+    }
+  };
 
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('adminLoggedIn');
     setIsLoggedIn(false);
     setOrders([]);
     setSelectedOrder(null);
@@ -295,18 +265,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
   };
 
   const retryFetch = () => {
-    setLoading(true);
     setError(null);
-    // Force re-run of useEffect by toggling login state
-    setIsLoggedIn(false);
-    setTimeout(() => setIsLoggedIn(true), 100);
+    fetchOrders();
+  };
+
+  const manualRefresh = () => {
+    setError(null);
+    fetchOrders();
   };
 
   const filteredOrders = orders.filter(order => {
     const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
     const matchesSearch = searchTerm === '' || 
-      order.customer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.id.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesStatus && matchesSearch;
@@ -371,7 +343,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
     return <AdminLogin onLogin={handleLogin} />;
   }
 
-  if (loading) {
+  if (loading && isInitialLoad) {
     return (
       <div className="pt-24 pb-16 min-h-screen">
         <div className="container mx-auto px-4">
@@ -401,13 +373,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
               Admin Panel
             </h1>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center px-4 py-2 text-gray-600 hover:text-red-600 transition-colors"
-          >
-            <LogOut size={20} className="mr-2" />
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={manualRefresh}
+              className="flex items-center px-4 py-2 text-gray-600 hover:text-pink-600 transition-colors border border-gray-300 rounded-lg hover:border-pink-300"
+              title="Refresh Orders"
+            >
+              <RefreshCw size={20} className="mr-2" />
+              Refresh
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center px-4 py-2 text-gray-600 hover:text-red-600 transition-colors"
+            >
+              <LogOut size={20} className="mr-2" />
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* Error Message */}
