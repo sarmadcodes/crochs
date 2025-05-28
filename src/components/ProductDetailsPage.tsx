@@ -256,7 +256,7 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
               <div className="text-sm font-medium text-pink-500 mb-2">{product.category}</div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">{product.name}</h1>
               
-              <div className="text-2xl font-bold text-pink-700 mb-6">${product.price}</div>
+              <div className="text-2xl font-bold text-pink-700 mb-6">Rs {product.price}.00</div>
               
               <div className="border-t border-gray-200 pt-6 mb-6">
                 <p className="text-gray-600 mb-4">
