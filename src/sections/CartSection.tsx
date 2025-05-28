@@ -75,14 +75,14 @@ export const CartSection: React.FC<CartSectionProps> = ({
                             <div className="ml-4 flex flex-col justify-center">
                               <h3 className="font-medium text-gray-800">{item.name}</h3>
                               <div className="text-xs text-pink-500">{item.category}</div>
-                              <div className="md:hidden mt-1 text-sm text-gray-800">${item.price}</div>
+                              <div className="md:hidden mt-1 text-sm text-gray-800">Rs {item.price}</div>
                             </div>
                           </div>
                         </div>
                         
                         <div className="md:col-span-2 flex items-center justify-center">
                           <div className="hidden md:block font-medium text-gray-800">
-                            ${item.price}
+                            Rs {item.price}
                           </div>
                         </div>
                         
@@ -106,7 +106,7 @@ export const CartSection: React.FC<CartSectionProps> = ({
                         
                         <div className="md:col-span-2 flex items-center justify-between md:justify-center">
                           <div className="font-medium text-gray-800">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            Rs {(item.price * item.quantity).toFixed(2)}
                           </div>
                           <button 
                             onClick={() => removeFromCart(item.id)}
@@ -128,18 +128,18 @@ export const CartSection: React.FC<CartSectionProps> = ({
                         
                         <div className="flex justify-between">
                           <span className="text-gray-600">Subtotal ({getTotalItems()} items)</span>
-                          <span className="font-medium">${getTotalPrice().toFixed(2)}</span>
+                          <span className="font-medium">Rs {getTotalPrice().toFixed(2)}</span>
                         </div>
                         
                         <div className="flex justify-between">
                           <span className="text-gray-600">Shipping</span>
-                          <span className="font-medium">$5.00</span>
+                          <span className="font-medium">Rs 200.00</span>
                         </div>
                         
                         <div className="pt-3 border-t border-gray-100">
                           <div className="flex justify-between text-lg font-medium">
                             <span>Total</span>
-                            <span className="text-pink-700">${(getTotalPrice() + 5).toFixed(2)}</span>
+                            <span className="text-pink-700">Rs {(getTotalPrice() + 200).toFixed(2)}</span>
                           </div>
                         </div>
                         
