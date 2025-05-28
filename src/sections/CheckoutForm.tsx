@@ -12,13 +12,15 @@ interface CheckoutFormProps {
   clearCart: () => void; // You'll need to implement this in your app
 }
 
-type PaymentMethod = 'cod' | 'bank';
+type PaymentMethod = 'cod' | 'sadapay' | 'easypaisa' | 'bank';
 
 interface OrderFormData {
   fullName: string;
   email: string;
   phone: string;
   address: string;
+  city: string;
+  postalCode: string;
   paymentMethod: PaymentMethod;
   paymentScreenshot: File | null;
 }
@@ -34,6 +36,8 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     email: '',
     phone: '',
     address: '',
+    city: '',
+    postalCode: '',
     paymentMethod: 'cod',
     paymentScreenshot: null
   });
@@ -53,6 +57,41 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     }
   };
   
+  const getPaymentDetails = () => {
+    switch (formData.paymentMethod) {
+      case 'sadapay':
+        return {
+          title: 'SadaPay Account Details:',
+          details: [
+            'SadaPay Number: +92 300 1234567',
+            'Account Name: Your Store Name',
+            'Send payment and upload screenshot'
+          ]
+        };
+      case 'easypaisa':
+        return {
+          title: 'EasyPaisa Account Details:',
+          details: [
+            'EasyPaisa Number: +92 300 1234567',
+            'Account Name: Your Store Name',
+            'Send payment and upload screenshot'
+          ]
+        };
+      case 'bank':
+        return {
+          title: 'Bank Account Details:',
+          details: [
+            'Bank Name: Meezan Bank',
+            'Account Number: 1234567890123456',
+            'Account Title: Your Store Name',
+            'IBAN: PK12MEZN0001234567890123'
+          ]
+        };
+      default:
+        return null;
+    }
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -60,17 +99,23 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     
     try {
       // Validate form
-      if (!formData.fullName || !formData.email || !formData.phone || !formData.address) {
+      if (!formData.fullName || !formData.email || !formData.phone || !formData.address || !formData.city || !formData.postalCode) {
         throw new Error('Please fill all required fields');
       }
       
-      if (formData.paymentMethod === 'bank' && !formData.paymentScreenshot) {
-        throw new Error('Please upload payment screenshot for bank transfer');
+      // Validate Pakistani phone number format
+      const phoneRegex = /^(\+92|0)?3[0-9]{2}[0-9]{7}$/;
+      if (!phoneRegex.test(formData.phone.replace(/\s+/g, ''))) {
+        throw new Error('Please enter a valid Pakistani mobile number (e.g., 03001234567)');
       }
       
-      // Upload payment screenshot if bank transfer
+      if (['sadapay', 'easypaisa', 'bank'].includes(formData.paymentMethod) && !formData.paymentScreenshot) {
+        throw new Error('Please upload payment screenshot for online payment');
+      }
+      
+      // Upload payment screenshot if online payment
       let paymentScreenshotUrl = null;
-      if (formData.paymentMethod === 'bank' && formData.paymentScreenshot) {
+      if (['sadapay', 'easypaisa', 'bank'].includes(formData.paymentMethod) && formData.paymentScreenshot) {
         const storageRef = ref(storage, `payment-screenshots/${Date.now()}-${formData.paymentScreenshot.name}`);
         const uploadResult = await uploadBytes(storageRef, formData.paymentScreenshot);
         paymentScreenshotUrl = await getDownloadURL(uploadResult.ref);
@@ -82,7 +127,9 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
           fullName: formData.fullName,
           email: formData.email,
           phone: formData.phone,
-          address: formData.address
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode
         },
         items: cart.map(item => ({
           id: item.id,
@@ -94,7 +141,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
         payment: {
           method: formData.paymentMethod,
           screenshotUrl: paymentScreenshotUrl,
-          total: getTotalPrice() + 5 // Including $5 shipping
+          total: getTotalPrice() + 250 // Including Rs. 250 shipping (approx $1-2 in Pakistan)
         },
         status: 'pending',
         createdAt: Timestamp.now()
@@ -107,18 +154,25 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
       clearCart();
       setOrderPlaced(true);
       
+      // Scroll to top to show success message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
       // Reset form
       setFormData({
         fullName: '',
         email: '',
         phone: '',
         address: '',
+        city: '',
+        postalCode: '',
         paymentMethod: 'cod',
         paymentScreenshot: null
       });
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      // Scroll to error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setIsSubmitting(false);
     }
@@ -126,25 +180,24 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
   
   if (orderPlaced) {
     return (
-      <div className="pt-24 pb-16 min-h-screen">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden p-8 text-center">
-              <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100">
-                <Check size={32} className="text-green-500" />
-              </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">Order Placed Successfully!</h1>
-              <p className="text-gray-600 mb-8">
-                Thank you for your order. We've sent a confirmation email with all the details.
-              </p>
-              <button 
-                onClick={() => setActiveSection('home')}
-                className="bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white px-8 py-3 rounded-full font-medium transition-all"
-              >
-                Back to Home
-              </button>
-            </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 text-center animate-fade-in">
+          <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100">
+            <Check size={32} className="text-green-500" />
           </div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Order Placed Successfully!</h1>
+          <p className="text-gray-600 mb-8">
+            Thank you for your order. We've sent a confirmation email with all the details.
+          </p>
+          <button 
+            onClick={() => {
+              setOrderPlaced(false);
+              setActiveSection('home');
+            }}
+            className="bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white px-8 py-3 rounded-full font-medium transition-all"
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     );
@@ -185,6 +238,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     value={formData.fullName}
                     onChange={handleInputChange}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="Ahmad Ali"
                     required
                   />
                 </div>
@@ -197,6 +251,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     value={formData.email}
                     onChange={handleInputChange}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="ahmad@example.com"
                     required
                   />
                 </div>
@@ -209,20 +264,49 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     value={formData.phone}
                     onChange={handleInputChange}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="03001234567"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Pakistani mobile number format</p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="Karachi"
                     required
                   />
                 </div>
                 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Shipping Address *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Complete Address *</label>
                   <textarea
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
                     rows={3}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="House # 123, Street # 456, Area Name, Sector/Block"
                     required
                   ></textarea>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code *</label>
+                  <input
+                    type="text"
+                    name="postalCode"
+                    value={formData.postalCode}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="75400"
+                    required
+                  />
                 </div>
                 
                 <div className="md:col-span-2 mt-4">
@@ -230,7 +314,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 </div>
                 
                 <div className="md:col-span-2">
-                  <div className="flex flex-col space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-pink-50 transition">
                       <input
                         type="radio"
@@ -250,6 +334,36 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                       <input
                         type="radio"
                         name="paymentMethod"
+                        value="sadapay"
+                        checked={formData.paymentMethod === 'sadapay'}
+                        onChange={handleInputChange}
+                        className="w-5 h-5 text-pink-600 focus:ring-pink-500"
+                      />
+                      <span className="ml-3">
+                        <span className="block text-gray-800 font-medium">SadaPay</span>
+                        <span className="block text-gray-500 text-sm">Online payment</span>
+                      </span>
+                    </label>
+                    
+                    <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-pink-50 transition">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="easypaisa"
+                        checked={formData.paymentMethod === 'easypaisa'}
+                        onChange={handleInputChange}
+                        className="w-5 h-5 text-pink-600 focus:ring-pink-500"
+                      />
+                      <span className="ml-3">
+                        <span className="block text-gray-800 font-medium">EasyPaisa</span>
+                        <span className="block text-gray-500 text-sm">Online payment</span>
+                      </span>
+                    </label>
+                    
+                    <label className="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-pink-50 transition">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
                         value="bank"
                         checked={formData.paymentMethod === 'bank'}
                         onChange={handleInputChange}
@@ -257,20 +371,25 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                       />
                       <span className="ml-3">
                         <span className="block text-gray-800 font-medium">Bank Transfer</span>
-                        <span className="block text-gray-500 text-sm">Make a payment to our bank account</span>
+                        <span className="block text-gray-500 text-sm">Transfer to bank account</span>
                       </span>
                     </label>
                   </div>
                 </div>
                 
-                {formData.paymentMethod === 'bank' && (
+                {['sadapay', 'easypaisa', 'bank'].includes(formData.paymentMethod) && (
                   <div className="md:col-span-2 mt-2">
-                    <div className="bg-blue-50 p-4 rounded-lg mb-4">
-                      <h3 className="font-medium text-blue-800 mb-2">Bank Account Details:</h3>
-                      <p className="text-blue-700">Bank Name: Example Bank</p>
-                      <p className="text-blue-700">Account Number: 1234567890</p>
-                      <p className="text-blue-700">Account Name: Your Store Name</p>
-                    </div>
+                    {(() => {
+                      const paymentDetails = getPaymentDetails();
+                      return paymentDetails ? (
+                        <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                          <h3 className="font-medium text-blue-800 mb-2">{paymentDetails.title}</h3>
+                          {paymentDetails.details.map((detail, index) => (
+                            <p key={index} className="text-blue-700">{detail}</p>
+                          ))}
+                        </div>
+                      ) : null;
+                    })()}
                     
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Upload Payment Screenshot *
@@ -318,7 +437,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                           <span className="text-gray-700">
                             {item.name} × {item.quantity}
                           </span>
-                          <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                          <span className="font-medium">Rs. {(item.price * item.quantity * 280).toFixed(0)}</span>
                         </div>
                       ))}
                     </div>
@@ -326,23 +445,23 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     <div className="border-t border-gray-200 pt-4">
                       <div className="flex justify-between text-gray-700">
                         <span>Subtotal</span>
-                        <span>${getTotalPrice().toFixed(2)}</span>
+                        <span>Rs. {(getTotalPrice() * 280).toFixed(0)}</span>
                       </div>
                       <div className="flex justify-between text-gray-700 mt-2">
                         <span>Shipping</span>
-                        <span>$5.00</span>
+                        <span>Rs. 250</span>
                       </div>
                       <div className="flex justify-between text-xl font-bold mt-4 text-gray-800">
                         <span>Total</span>
-                        <span>${(getTotalPrice() + 5).toFixed(2)}</span>
+                        <span>Rs. {(getTotalPrice() * 280 + 250).toFixed(0)}</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 
                 {error && (
-                  <div className="md:col-span-2 bg-red-50 text-red-600 p-4 rounded-lg">
-                    {error}
+                  <div className="md:col-span-2 bg-red-50 text-red-600 p-4 rounded-lg border border-red-200">
+                    <strong>Error:</strong> {error}
                   </div>
                 )}
                 
@@ -350,7 +469,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white py-4 rounded-lg font-medium transition-all disabled:opacity-70"
+                    className="w-full bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white py-4 rounded-lg font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? 'Processing...' : 'Place Order'}
                   </button>
