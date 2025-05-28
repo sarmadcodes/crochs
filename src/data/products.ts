@@ -4,7 +4,7 @@ export const products: Product[] = [
   { 
     id: 1, 
     name: "balalaaa", 
-    price: 45, 
+    price: 12713, // $45 * 282.5 = 12,712.5
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Plush",
     images: [
@@ -16,7 +16,7 @@ export const products: Product[] = [
   { 
     id: 2, 
     name: "Amigurumi Bunny", 
-    price: 25, 
+    price: 7063, // $25 * 282.5 = 7,062.5
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Plush",
     images: [
@@ -28,7 +28,7 @@ export const products: Product[] = [
   { 
     id: 3, 
     name: "Flower Coasters (Set of 4)", 
-    price: 18, 
+    price: 5085, // $18 * 282.5 = 5,085
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Keychains",
     images: [
@@ -40,7 +40,7 @@ export const products: Product[] = [
   { 
     id: 4, 
     name: "Strawberry Beanie", 
-    price: 22, 
+    price: 6215, // $22 * 282.5 = 6,215
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Keychains",
     images: [
@@ -52,7 +52,7 @@ export const products: Product[] = [
   { 
     id: 5, 
     name: "Heart Garland", 
-    price: 30, 
+    price: 8475, // $30 * 282.5 = 8,475
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Keychains",
     images: [
@@ -64,7 +64,7 @@ export const products: Product[] = [
   { 
     id: 6, 
     name: "Crochet Plant Hanger", 
-    price: 15, 
+    price: 4238, // $15 * 282.5 = 4,237.5
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Keychains",
     images: [
@@ -76,7 +76,7 @@ export const products: Product[] = [
   { 
     id: 7, 
     name: "Granny Square Throw", 
-    price: 65, 
+    price: 18363, // $65 * 282.5 = 18,362.5
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Keychains",
     images: [
@@ -88,7 +88,7 @@ export const products: Product[] = [
   { 
     id: 8, 
     name: "Amigurumi Elephant", 
-    price: 28, 
+    price: 7910, // $28 * 282.5 = 7,910
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Keychains",
     images: [
@@ -100,7 +100,7 @@ export const products: Product[] = [
   { 
     id: 9, 
     name: "Rainbow Wall Hanging", 
-    price: 35, 
+    price: 9888, // $35 * 282.5 = 9,887.5
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Bouquets",
     images: [
@@ -112,7 +112,7 @@ export const products: Product[] = [
   { 
     id: 10, 
     name: "Slouchy Winter Hat", 
-    price: 24, 
+    price: 6780, // $24 * 282.5 = 6,780
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Bouquets",
     images: [
@@ -124,7 +124,7 @@ export const products: Product[] = [
   { 
     id: 11, 
     name: "Cotton Market Bag", 
-    price: 32, 
+    price: 9040, // $32 * 282.5 = 9,040
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Bouquets",
     images: [
@@ -136,7 +136,7 @@ export const products: Product[] = [
   { 
     id: 12, 
     name: "Baby Booties", 
-    price: 18, 
+    price: 5085, // $18 * 282.5 = 5,085
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Baby",
     images: [
@@ -148,7 +148,7 @@ export const products: Product[] = [
   { 
     id: 13, 
     name: "Pumpkin Decorations (Set of 3)", 
-    price: 27, 
+    price: 7628, // $27 * 282.5 = 7,627.5
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Bouquets",
     images: [
@@ -160,7 +160,7 @@ export const products: Product[] = [
   { 
     id: 14, 
     name: "Chunky Throw Pillow", 
-    price: 40, 
+    price: 11300, // $40 * 282.5 = 11,300
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Bouquets",
     images: [
@@ -172,7 +172,7 @@ export const products: Product[] = [
   { 
     id: 15, 
     name: "Fingerless Gloves", 
-    price: 20, 
+    price: 5650, // $20 * 282.5 = 5,650
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Plush",
     images: [
@@ -184,7 +184,7 @@ export const products: Product[] = [
   { 
     id: 16, 
     name: "Cactus Collection (Set of 2)", 
-    price: 22, 
+    price: 6215, // $22 * 282.5 = 6,215
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Plush",
     images: [
@@ -196,7 +196,7 @@ export const products: Product[] = [
   { 
     id: 17, 
     name: "Pumpkin Decorations (Set of 2)", 
-    price: 27, 
+    price: 7628, // $27 * 282.5 = 7,627.5
     image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg", 
     category: "Plush",
     images: [
