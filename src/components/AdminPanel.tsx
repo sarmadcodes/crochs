@@ -480,7 +480,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-800">${getTotalRevenue().toFixed(2)}</p>
+                <p className="text-2xl font-bold text-gray-800">Rs {getTotalRevenue().toFixed(2)}</p>
               </div>
               <DollarSign className="text-green-500" size={32} />
             </div>
@@ -585,7 +585,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                       </td>
                       <td className="p-4">
                         <span className="font-medium text-gray-800">
-                          ${(order.payment?.total || 0).toFixed(2)}
+                          Rs {(order.payment?.total || 0).toFixed(2)}
                         </span>
                       </td>
                       <td className="p-4">
