@@ -54,7 +54,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="text-sm md:text-lg font-semibold text-gray-800 truncate">{product.name}</h3>
         </div>
         <div className="flex justify-between items-center mt-auto">
-          <span className="text-base md:text-lg font-bold text-pink-700">${product.price}</span>
+          <span className="text-base md:text-lg font-bold text-pink-700">Rs {product.price}.00</span>
           <button 
             onClick={(e) => {
               e.stopPropagation();
