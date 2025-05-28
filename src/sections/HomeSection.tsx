@@ -137,10 +137,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
       
       {/* Featured Section with Enhanced Mobile Slider - Now with Square Layout on Desktop */}
       <section className="home-featured-section py-12 md:py-20 px-4 bg-gradient-to-b from-pink-100 to-white relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-1/4 left-0 w-32 h-32 bg-pink-100 rounded-full opacity-60 -translate-x-1/2"></div>
-        <div className="absolute bottom-1/4 right-0 w-40 h-40 bg-red-50 rounded-full opacity-70 translate-x-1/2"></div>
-        <div className="absolute top-3/4 left-1/4 w-16 h-16 bg-pink-200 rounded-full opacity-40"></div>
+       
         
         <div className="container mx-auto relative z-10">
           <div className="flex flex-col items-center mb-12">
@@ -275,10 +272,8 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
 
       {/* Enhanced Reviews Section - NO CHANGES HERE */}
       <section className="home-reviews-section py-12 md:py-20 px-4 bg-gradient-to-b from-white to-pink-50 relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-1/4 left-0 w-32 h-32 bg-pink-100 rounded-full opacity-60 -translate-x-1/2"></div>
-        <div className="absolute bottom-1/4 right-0 w-40 h-40 bg-red-50 rounded-full opacity-70 translate-x-1/2"></div>
-        <div className="absolute top-3/4 left-1/4 w-16 h-16 bg-pink-200 rounded-full opacity-40"></div>
+       
+        
         
         <div className="container mx-auto relative z-10">
           <div className="flex flex-col items-center mb-12">
