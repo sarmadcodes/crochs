@@ -14,7 +14,6 @@ import { db } from '../Firebase';
 import { 
   RefreshCw, 
   Eye, 
-  Edit, 
   Trash2, 
   Package, 
   DollarSign, 
@@ -50,10 +49,12 @@ interface Customer {
   email: string;
   phone: string;
   address: string;
+  city: string;        // Add this
+  postalCode: string;  // Add this
 }
 
 interface Payment {
-  method: 'cod' | 'bank';
+  method: 'cod' | 'sadapay' | 'easypaisa' | 'bank'; // Updated to match checkout options
   total: number;
   screenshotUrl?: string;
 }
@@ -644,127 +645,167 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
         </div>
 
         {/* Order Details Modal */}
-        {selectedOrder && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    Order Details #{selectedOrder.id.slice(-8)}
-                  </h2>
-                  <button
-                    onClick={() => setSelectedOrder(null)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <XCircle size={24} />
-                  </button>
-                </div>
-              </div>
+{selectedOrder && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="p-6 border-b">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Order Details #{selectedOrder.id.slice(-8)}
+          </h2>
+          <button
+            onClick={() => setSelectedOrder(null)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <XCircle size={24} />
+          </button>
+        </div>
+      </div>
 
-              <div className="p-6 space-y-6">
-                {/* Customer Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
-                      <User size={20} className="mr-2" />
-                      Customer Information
-                    </h3>
-                    <div className="space-y-2">
-                      <p><strong>Name:</strong> {selectedOrder.customer?.fullName || 'N/A'}</p>
-                      <p className="flex items-center">
-                        <Mail size={16} className="mr-2" />
-                        {selectedOrder.customer?.email || 'N/A'}
-                      </p>
-                      <p className="flex items-center">
-                        <Phone size={16} className="mr-2" />
-                        {selectedOrder.customer?.phone || 'N/A'}
-                      </p>
-                      <p className="flex items-start">
-                        <MapPin size={16} className="mr-2 mt-1" />
-                        {selectedOrder.customer?.address || 'N/A'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
-                      <Package size={20} className="mr-2" />
-                      Order Information
-                    </h3>
-                    <div className="space-y-2">
-                      <p><strong>Order ID:</strong> {selectedOrder.id}</p>
-                      <p className="flex items-center">
-                        <Calendar size={16} className="mr-2" />
-                        {formatDate(selectedOrder.createdAt)}
-                      </p>
-                      <p className="flex items-center">
-                        {getStatusIcon(selectedOrder.status)}
-                        <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedOrder.status)}`}>
-                          {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Payment Info */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
-                    <CreditCard size={20} className="mr-2" />
-                    Payment Information
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p><strong>Method:</strong> {selectedOrder.payment?.method === 'cod' ? 'Cash on Delivery' : 'Bank Transfer'}</p>
-                      <p><strong>Total Amount:</strong> ${(selectedOrder.payment?.total || 0).toFixed(2)}</p>
-                    </div>
-                    {selectedOrder.payment?.screenshotUrl && (
-                      <a
-                        href={selectedOrder.payment.screenshotUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        <Download size={16} className="mr-2" />
-                        View Payment Proof
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Order Items */}
-                <div>
-                  <h3 className="font-semibold text-gray-800 mb-3">Order Items</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full border border-gray-200 rounded-lg">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="text-left p-3 border-b">Product</th>
-                          <th className="text-left p-3 border-b">Price</th>
-                          <th className="text-left p-3 border-b">Quantity</th>
-                          <th className="text-left p-3 border-b">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {selectedOrder.items?.map((item, index) => (
-                          <tr key={index} className="border-b last:border-b-0">
-                            <td className="p-3">{item.name || 'N/A'}</td>
-                            <td className="p-3">${(item.price || 0).toFixed(2)}</td>
-                            <td className="p-3">{item.quantity || 0}</td>
-                            <td className="p-3 font-medium">${(item.totalPrice || 0).toFixed(2)}</td>
-                          </tr>
-                        )) || (
-                          <tr>
-                            <td colSpan={4} className="p-3 text-center text-gray-500">No items found</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+      <div className="p-6 space-y-6">
+        {/* Customer Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+              <User size={20} className="mr-2" />
+              Customer Information
+            </h3>
+            <div className="space-y-2">
+              <p><strong>Name:</strong> {selectedOrder.customer?.fullName || 'N/A'}</p>
+              <p className="flex items-center">
+                <Mail size={16} className="mr-2" />
+                {selectedOrder.customer?.email || 'N/A'}
+              </p>
+              <p className="flex items-center">
+                <Phone size={16} className="mr-2" />
+                {selectedOrder.customer?.phone || 'N/A'}
+              </p>
+              <p><strong>City:</strong> {selectedOrder.customer?.city || 'N/A'}</p>
+              <p><strong>Postal Code:</strong> {selectedOrder.customer?.postalCode || 'N/A'}</p>
+              <p className="flex items-start">
+                <MapPin size={16} className="mr-2 mt-1" />
+                <span className="text-sm">{selectedOrder.customer?.address || 'N/A'}</span>
+              </p>
             </div>
           </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+              <Package size={20} className="mr-2" />
+              Order Information
+            </h3>
+            <div className="space-y-2">
+              <p><strong>Order ID:</strong> {selectedOrder.id}</p>
+              <p className="flex items-center">
+                <Calendar size={16} className="mr-2" />
+                {formatDate(selectedOrder.createdAt)}
+              </p>
+              <p className="flex items-center">
+                {getStatusIcon(selectedOrder.status)}
+                <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedOrder.status)}`}>
+                  {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Info */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
+            <CreditCard size={20} className="mr-2" />
+            Payment Information
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <p><strong>Method:</strong> {(() => {
+                switch(selectedOrder.payment?.method) {
+                  case 'cod': return 'Cash on Delivery';
+                  case 'sadapay': return 'SadaPay';
+                  case 'easypaisa': return 'EasyPaisa';
+                  case 'bank': return 'Bank Transfer';
+                  default: return selectedOrder.payment?.method || 'N/A';
+                }
+              })()}</p>
+              <p><strong>Subtotal:</strong> Rs. {((selectedOrder.payment?.total || 0) - 250).toFixed(2)}</p>
+              <p><strong>Shipping:</strong> Rs. 250</p>
+              <p className="text-lg"><strong>Total Amount:</strong> Rs. {(selectedOrder.payment?.total || 0).toFixed(2)}</p>
+            </div>
+            
+            <div className="flex items-center justify-center">
+              {selectedOrder.payment?.screenshotUrl ? (
+                <a
+                  href={selectedOrder.payment.screenshotUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Download size={16} className="mr-2" />
+                  View Payment Proof
+                </a>
+              ) : (
+                <div className="text-gray-500 text-center">
+                  {selectedOrder.payment?.method === 'cod' ? 
+                    'No payment proof required for COD' : 
+                    'No payment proof uploaded'
+                  }
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Order Items */}
+        <div>
+          <h3 className="font-semibold text-gray-800 mb-3">Order Items</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border border-gray-200 rounded-lg">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left p-3 border-b">Product</th>
+                  <th className="text-left p-3 border-b">Price</th>
+                  <th className="text-left p-3 border-b">Quantity</th>
+                  <th className="text-left p-3 border-b">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedOrder.items?.map((item, index) => (
+                  <tr key={index} className="border-b last:border-b-0">
+                    <td className="p-3">{item.name || 'N/A'}</td>
+                    <td className="p-3">Rs. {(item.price || 0).toFixed(2)}</td>
+                    <td className="p-3">{item.quantity || 0}</td>
+                    <td className="p-3 font-medium">Rs. {((item.price || 0) * (item.quantity || 0)).toFixed(2)}</td>
+                  </tr>
+                )) || (
+                  <tr>
+                    <td colSpan={4} className="p-3 text-center text-gray-500">No items found</td>
+                  </tr>
+                )}
+              </tbody>
+              <tfoot className="bg-gray-50">
+                <tr>
+                  <td colSpan={3} className="p-3 text-right font-semibold">Order Total:</td>
+                  <td className="p-3 font-bold text-lg">Rs. {(selectedOrder.payment?.total || 0).toFixed(2)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        {/* Order Status Actions (if needed) */}
+        <div className="flex justify-end space-x-3 pt-4 border-t">
+          <button
+            onClick={() => setSelectedOrder(null)}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Close
+          </button>
+          {/* Add status update buttons here if needed */}
+        </div>
+      </div>
+    </div>
+  </div>
+        
         )}
       </div>
     </div>
