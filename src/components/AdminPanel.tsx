@@ -384,9 +384,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
   if (!isLoggedIn) {
     return <AdminLogin onLogin={handleLogin} />;
   }
-if (!isLoggedIn) {
-    return <AdminLogin onLogin={handleLogin} />;
-  }
+
   if (loading) {
     return (
       <div className="pt-20 pb-16 min-h-screen">
