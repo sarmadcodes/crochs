@@ -239,7 +239,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
                         <h3 className="text-lg font-semibold text-gray-800 truncate">{product.name}</h3>
                       </div>
                       <div className="flex justify-between items-center mt-auto">
-                        <span className="text-lg font-bold text-pink-700">${product.price}</span>
+                        <span className="text-lg font-bold text-pink-700">Rs {product.price}.00</span>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
