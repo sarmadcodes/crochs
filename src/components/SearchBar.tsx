@@ -170,7 +170,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
               </div>
               <div>
                 <div className="font-medium text-pink-800">{product.name}</div>
-                <div className="text-xs text-pink-600">${product.price.toFixed(2)}</div>
+                <div className="text-xs text-pink-600">Rs {product.price.toFixed(2)}</div>
               </div>
             </div>
           ))}
