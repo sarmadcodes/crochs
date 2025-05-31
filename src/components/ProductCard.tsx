@@ -53,8 +53,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <div className="text-xs font-medium text-pink-500 mb-0.5 md:mb-1">{product.category}</div>
           <h3 className="text-sm md:text-lg font-semibold text-gray-800 truncate">{product.name}</h3>
         </div>
-        <div className="flex justify-between items-center mt-auto">
-          <span className="text-base md:text-lg font-bold text-pink-700">Rs {product.price}.00</span>
+        <div className="flex justify-between items-center mt-auto gap-2 sm:gap-3">
+          <span className="text-xs sm:text-sm md:text-lg font-bold text-pink-700 flex-shrink-0">Rs {product.price}.00</span>
           <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -62,13 +62,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             }}
             className={`
               ${isFeature 
-                ? 'bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-medium transition-colors flex items-center' 
-                : 'bg-pink-100 hover:bg-pink-200 text-pink-700 px-2 py-0.5 sm:px-3 sm:py-1 md:px-5 md:py-2 rounded-full text-xs sm:text-sm md:text-base font-medium transition-colors flex items-center'
+                ? 'bg-pink-100 hover:bg-pink-200 text-pink-700 px-2 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-full text-xs sm:text-sm md:text-base font-medium transition-colors flex items-center justify-center whitespace-nowrap' 
+                : 'bg-pink-100 hover:bg-pink-200 text-pink-700 px-1.5 py-1 sm:px-3 sm:py-1 md:px-5 md:py-2 rounded-full text-xs sm:text-sm md:text-base font-medium transition-colors flex items-center justify-center whitespace-nowrap'
               }
             `}
           >
-            <ShoppingCart size={isFeature ? 14 : 12} className="mr-1 md:mr-2 md:w-5 md:h-5" />
-            <span className="md:font-semibold">Add to cart</span>
+            <span className="md:font-semibold">Add to</span>
+            <ShoppingCart size={isFeature ? 12 : 10} className="ml-1 sm:ml-2 md:w-5 md:h-5" />
           </button>
         </div>
       </div>
@@ -86,7 +86,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   60% { transform: scale(1); }
   100% { transform: scale(1); }
 }
-
 .animate-heartBeat {
   animation: heartBeat 1s ease-in-out;
 }
