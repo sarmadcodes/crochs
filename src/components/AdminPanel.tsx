@@ -36,7 +36,7 @@ import {
   LogOut,
   Shield,
   Menu,
-  ChevronDown
+  Printer,
 } from 'lucide-react';
 
 interface OrderItem {
@@ -381,11 +381,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
     fetchOrders();
   };
 
-  if (!isLoggedIn) {
+  
+if (!isLoggedIn) {
     return <AdminLogin onLogin={handleLogin} />;
   }
-
-  if (loading) {
+ if (loading) {
     return (
       <div className="pt-20 pb-16 min-h-screen">
         <div className="container mx-auto px-4">
@@ -718,19 +718,35 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                   <h2 className="text-lg font-bold text-gray-800">
                     Order #{selectedOrder.id.slice(-8)}
                   </h2>
-                  <button
-                    onClick={() => setSelectedOrder(null)}
-                    className="p-1 hover:bg-gray-100 rounded-lg"
-                  >
-                    <XCircle size={20} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => window.print()}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 print:hidden"
+                    >
+                      <Printer size={16} />
+                      Print
+                    </button>
+                    <button
+                      onClick={() => setSelectedOrder(null)}
+                      className="p-1 hover:bg-gray-100 rounded-lg print:hidden"
+                    >
+                      <XCircle size={20} />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-4 space-y-4">
+              <div className="p-4 space-y-4" id="printable-order">
+                {/* Print Header - Only visible when printing */}
+                <div className="hidden print:block text-center mb-6">
+                  <h1 className="text-2xl font-bold text-gray-800 mb-2">Order Details</h1>
+                  <p className="text-gray-600">Order #{selectedOrder.id}</p>
+                  <p className="text-sm text-gray-500">Printed on: {new Date().toLocaleDateString()}</p>
+                </div>
+
                 {/* Customer Info */}
                 <div className="grid grid-cols-1 gap-4">
-                  <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-50 print:bg-white print:border print:border-gray-300 p-3 rounded-lg">
                     <h3 className="font-semibold text-gray-800 mb-2 flex items-center text-sm">
                       <User size={16} className="mr-2" />
                       Customer Information
@@ -754,7 +770,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-50 print:bg-white print:border print:border-gray-300 p-3 rounded-lg">
                     <h3 className="font-semibold text-gray-800 mb-2 flex items-center text-sm">
                       <Package size={16} className="mr-2" />
                       Order Information
@@ -767,7 +783,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                       </p>
                       <p className="flex items-center">
                         {getStatusIcon(selectedOrder.status)}
-                        <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedOrder.status)}`}>
+                        <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedOrder.status)} print:bg-gray-100 print:text-gray-800`}>
                           {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
                         </span>
                       </p>
@@ -776,7 +792,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                 </div>
 
                 {/* Payment Info */}
-                <div className="bg-gray-50 p-3 rounded-lg">
+                <div className="bg-gray-50 print:bg-white print:border print:border-gray-300 p-3 rounded-lg">
                   <h3 className="font-semibold text-gray-800 mb-2 flex items-center text-sm">
                     <CreditCard size={16} className="mr-2" />
                     Payment Information
@@ -798,7 +814,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                     </div>
                     
                     {selectedOrder.payment?.screenshotUrl && (
-                      <div className="flex justify-center">
+                      <div className="flex justify-center print:hidden">
                         <a
                           href={selectedOrder.payment.screenshotUrl}
                           target="_blank"
@@ -810,6 +826,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                         </a>
                       </div>
                     )}
+                    
+                    {/* Print version of payment proof info */}
+                    {selectedOrder.payment?.screenshotUrl && (
+                      <div className="hidden print:block">
+                        <p><strong>Payment Proof:</strong> Available (Screenshot provided)</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -817,41 +840,47 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ setActiveSection }) => {
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-2 text-sm">Order Items</h3>
                   <div className="overflow-x-auto">
-                    <table className="w-full border border-gray-200 rounded-lg text-sm">
-                      <thead className="bg-gray-50">
+                    <table className="w-full border border-gray-200 rounded-lg text-sm print:border-collapse">
+                      <thead className="bg-gray-50 print:bg-gray-100">
                         <tr>
-                          <th className="text-left p-2 border-b">Product</th>
-                          <th className="text-left p-2 border-b">Price</th>
-                          <th className="text-left p-2 border-b">Qty</th>
-                          <th className="text-left p-2 border-b">Total</th>
+                          <th className="text-left p-2 border-b print:border print:border-gray-400">Product</th>
+                          <th className="text-left p-2 border-b print:border print:border-gray-400">Price</th>
+                          <th className="text-left p-2 border-b print:border print:border-gray-400">Qty</th>
+                          <th className="text-left p-2 border-b print:border print:border-gray-400">Total</th>
                         </tr>
                       </thead>
                       <tbody>
                         {selectedOrder.items?.map((item, index) => (
-                          <tr key={index} className="border-b last:border-b-0">
-                            <td className="p-2">{item.name || 'N/A'}</td>
-                            <td className="p-2">Rs. {(item.price || 0).toFixed(2)}</td>
-                            <td className="p-2">{item.quantity || 0}</td>
-                            <td className="p-2 font-medium">Rs. {((item.price || 0) * (item.quantity || 0)).toFixed(2)}</td>
+                          <tr key={index} className="border-b last:border-b-0 print:border-b print:border-gray-300">
+                            <td className="p-2 print:border print:border-gray-300">{item.name || 'N/A'}</td>
+                            <td className="p-2 print:border print:border-gray-300">Rs. {(item.price || 0).toFixed(2)}</td>
+                            <td className="p-2 print:border print:border-gray-300">{item.quantity || 0}</td>
+                            <td className="p-2 font-medium print:border print:border-gray-300">Rs. {((item.price || 0) * (item.quantity || 0)).toFixed(2)}</td>
                           </tr>
                         )) || (
                           <tr>
-                            <td colSpan={4} className="p-2 text-center text-gray-500">No items found</td>
+                            <td colSpan={4} className="p-2 text-center text-gray-500 print:border print:border-gray-300">No items found</td>
                           </tr>
                         )}
                       </tbody>
-                      <tfoot className="bg-gray-50">
+                      <tfoot className="bg-gray-50 print:bg-gray-100">
                         <tr>
-                          <td colSpan={3} className="p-2 text-right font-medium">Order Total:</td>
-                          <td className="p-2 font-bold">Rs. {(selectedOrder.payment?.total || 0).toFixed(2)}</td>
+                          <td colSpan={3} className="p-2 text-right font-medium print:border print:border-gray-400">Order Total:</td>
+                          <td className="p-2 font-bold print:border print:border-gray-400">Rs. {(selectedOrder.payment?.total || 0).toFixed(2)}</td>
                         </tr>
                       </tfoot>
                     </table>
                   </div>
                 </div>
 
+                {/* Print Footer - Only visible when printing */}
+                <div className="hidden print:block text-center mt-8 pt-4 border-t border-gray-300">
+                  <p className="text-sm text-gray-600">Thank you for your business!</p>
+                  <p className="text-xs text-gray-500 mt-1">This is a computer-generated document.</p>
+                </div>
+
                 {/* Close Button */}
-                <div className="flex justify-end pt-3">
+                <div className="flex justify-end pt-3 print:hidden">
                   <button
                     onClick={() => setSelectedOrder(null)}
                     className="px-3 py-1.5 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50"
