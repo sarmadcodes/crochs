@@ -153,14 +153,22 @@ export const CartSection: React.FC<CartSectionProps> = ({
                     
                     <div>
                       <div className="bg-white p-5 rounded-lg shadow-sm">
-                        <h3 className="text-lg font-medium text-gray-800 mb-4">We Accept</h3>
-                        <div className="flex space-x-3">
-                          <div className="w-12 h-8 bg-gray-200 rounded"></div>
-                          <div className="w-12 h-8 bg-gray-200 rounded"></div>
-                          <div className="w-12 h-8 bg-gray-200 rounded"></div>
-                          <div className="w-12 h-8 bg-gray-200 rounded"></div>
-                        </div>
-                      </div>
+  <h3 className="text-lg font-medium text-gray-800 mb-4">We Accept</h3>
+  <div className="flex space-x-3">
+    <a  target="_blank" rel="noopener noreferrer" className="w-12 h-8 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 flex items-center justify-center">
+      <img src="https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/13674554/Mastercard_logo.jpg?quality=90&strip=all&crop=0,16.666666666667,100,66.666666666667" alt="Mastercard" className="w-20 h-13 object-contain" />
+    </a>
+    <a  target="_blank" rel="noopener noreferrer" className="w-12 h-8 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 flex items-center justify-center">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0B7JoiqLbyOh1fa0QS8cFuL_6dShzxz5LUA&s" alt="SadaPay" className="w-20 h-13 object-contain" />
+    </a>
+    <a  target="_blank" rel="noopener noreferrer" className="w-12 h-8 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 flex items-center justify-center">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO57H7SUpRm3rEMqjutE3j0dJVo0R3dsc39QWuEa3bH8wf7QjUJ8IDhAifEb3j-A8uTAo&usqp=CAU" alt="EasyPaisa" className="w-20 h-13 object-contain" />
+    </a>
+    <a  target="_blank" rel="noopener noreferrer" className="w-12 h-8 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 flex items-center justify-center">
+      <img src="https://seeklogo.com/images/B/bank-transfer-logo-291DE7CDB2-seeklogo.com.png" alt="Bank Transfer" className="w-20 h-13 object-contain" />
+    </a>
+  </div>
+</div>
                       
                       <div className="bg-white p-5 rounded-lg shadow-sm mt-4">
                         <h3 className="text-lg font-medium text-gray-800 mb-4">Need Help?</h3>
