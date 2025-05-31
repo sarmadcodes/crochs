@@ -18,7 +18,10 @@ interface OrderFormData {
   fullName: string;
   email: string;
   phone: string;
-  address: string;
+  houseNumber: string;
+  streetNumber: string;
+  areaDetail: string;
+  sectorBlock: string;
   city: string;
   postalCode: string;
   paymentMethod: PaymentMethod;
@@ -35,7 +38,10 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     fullName: '',
     email: '',
     phone: '',
-    address: '',
+    houseNumber: '',
+    streetNumber: '',
+    areaDetail: '',
+    sectorBlock: '',
     city: '',
     postalCode: '',
     paymentMethod: 'cod',
@@ -99,7 +105,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     
     try {
       // Validate form
-      if (!formData.fullName || !formData.email || !formData.phone || !formData.address || !formData.city || !formData.postalCode) {
+      if (!formData.fullName || !formData.email || !formData.phone || !formData.houseNumber || !formData.streetNumber || !formData.areaDetail || !formData.sectorBlock || !formData.city) {
         throw new Error('Please fill all required fields');
       }
       
@@ -121,15 +127,23 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
         paymentScreenshotUrl = await getDownloadURL(uploadResult.ref);
       }
       
+      // Construct complete address from individual fields
+      const completeAddress = [
+        `House # ${formData.houseNumber}`,
+        `Street # ${formData.streetNumber}`,
+        formData.areaDetail,
+        formData.sectorBlock
+      ].filter(Boolean).join(', ');
+      
       // Create order object
       const orderData = {
         customer: {
           fullName: formData.fullName,
           email: formData.email,
           phone: formData.phone,
-          address: formData.address,
+          address: completeAddress,
           city: formData.city,
-          postalCode: formData.postalCode
+          postalCode: formData.postalCode || 'Not provided'
         },
         items: cart.map(item => ({
           id: item.id,
@@ -162,7 +176,10 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
         fullName: '',
         email: '',
         phone: '',
-        address: '',
+        houseNumber: '',
+        streetNumber: '',
+        areaDetail: '',
+        sectorBlock: '',
         city: '',
         postalCode: '',
         paymentMethod: 'cod',
@@ -283,30 +300,73 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                   />
                 </div>
                 
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Complete Address *</label>
-                  <textarea
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    rows={3}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
-                    placeholder="House # 123, Street # 456, Area Name, Sector/Block"
-                    required
-                  ></textarea>
+                <div className="md:col-span-2 mt-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Address Details</h3>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">House Number *</label>
+                  <input
+                    type="text"
+                    name="houseNumber"
+                    value={formData.houseNumber}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="123"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Street Number *</label>
+                  <input
+                    type="text"
+                    name="streetNumber"
+                    value={formData.streetNumber}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="456"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Area Detail *</label>
+                  <input
+                    type="text"
+                    name="areaDetail"
+                    value={formData.areaDetail}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="Gulshan-e-Iqbal"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sector/Block *</label>
+                  <input
+                    type="text"
+                    name="sectorBlock"
+                    value={formData.sectorBlock}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
+                    placeholder="Block 13-A"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
                   <input
                     type="text"
                     name="postalCode"
                     value={formData.postalCode}
                     onChange={handleInputChange}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 focus:border-pink-500 outline-none transition"
-                    placeholder="75400"
-                    required
+                    placeholder="75400 (Optional)"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Optional field</p>
                 </div>
                 
                 <div className="md:col-span-2 mt-4">
