@@ -43,7 +43,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
   const filteredAndSortedProducts = getFilteredAndSortedProducts();
   
   return (
-    <div className="products-section pt-24 pb-16 min-h-screen">
+    <div className="products-section pt-36 pb-16 min-h-screen">
       <div className="container mx-auto px-3">
         <h1 className="text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center text-pink-600">
           Our Crochets
