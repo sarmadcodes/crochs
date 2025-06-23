@@ -96,7 +96,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
   onViewProductDetails
 }) => {
   return (
-    <div className="pt-12 md:pt-16">
+    <div className="pt-12 md:pt-32">
       <section className="min-h-[70vh] md:min-h-[80vh] flex flex-col justify-center items-center text-center px-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full flex justify-between overflow-hidden opacity-20">
           {[...Array(20)].map((_, i) => (
