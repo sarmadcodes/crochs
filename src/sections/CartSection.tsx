@@ -20,7 +20,7 @@ export const CartSection: React.FC<CartSectionProps> = ({
   getTotalPrice
 }) => {
   return (
-    <div className="pt-24 pb-16 min-h-screen">
+    <div className="pt-36 pb-16 min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center mb-8">
