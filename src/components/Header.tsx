@@ -128,7 +128,9 @@ export const Header: React.FC<HeaderProps> = ({
 
       <header
         className={`fixed top-8 w-full transition-all duration-500 z-40 ${
-          scrolled ? "bg-white/90 shadow-md" : "bg-white"
+          scrolled 
+            ? "bg-white/25 shadow-lg border-b border-gray-200/30" 
+            : "bg-white"
         }`}
       >
         {/* Mobile Search Bar (Full Width) - Only show when search is active */}
@@ -321,7 +323,7 @@ export const Header: React.FC<HeaderProps> = ({
         {mobileMenuOpen && !mobileSearchActive && (
           <div
             ref={menuRef}
-            className="md:hidden bg-white/95 py-4 shadow-lg animate-slideDown fixed top-[105px] left-0 w-full"
+            className="md:hidden bg-black/10 py-4 shadow-lg animate-slideDown fixed top-[105px] left-0 w-full border-b border-gray-200/30"
           >
             <div className="container mx-auto px-4 flex flex-col space-y-4">
               {["home", "crochets"].map((section) => (
