@@ -45,10 +45,10 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
   return (
     <div className="products-section pt-36 pb-16 min-h-screen">
       <div className="container mx-auto px-3">
-        <h1 className="text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center text-pink-600">
+        {/* <h1 className="text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center text-pink-600">
           Our Crochets
           <span className="block w-16 md:w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 mx-auto mt-3 md:mt-2"></span>
-        </h1> 
+        </h1>  */}
         
         {/* Sort and Back to Home Container */}
         <div className="products-sort-container flex flex-col sm:flex-row justify-between items-center mb-8 relative mt-6 md:mt-2 space-y-4 sm:space-y-0">
