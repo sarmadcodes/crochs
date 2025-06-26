@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ShoppingBag, ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
+import { ShoppingBag, ChevronLeft, ChevronRight, Star, Quote, ArrowRight } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, A11y, EffectCoverflow, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -23,21 +23,21 @@ const reviews: Review[] = [
   {
     id: 1,
     name: "sarms",
-    image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg",
+    image: "https://i.pinimg.cn/originals/2d/8f/91/2d8f91b7f7f7b7f7b7f7b7f7b7f7b7f7.jpg",
     rating: 5,
     text: "Absolutely in love with my crochet blanket! The craftsmanship is exceptional, and it adds such warmth to my living room."
   },
   {
     id: 2,
     name: "samosa",
-    image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg",
+    image: "https://i.pinimg.cn/originals/2d/8f/91/2d8f91b7f7f7b7f7b7f7b7f7b7f7b7f7.jpg",
     rating: 5,
     text: "Kya mast cheez banayi hai.The attention to detail is remarkable, and each piece feels unique."
   },
   {
     id: 3,
     name: "pakora",
-    image: "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg",
+    image: "https://i.pinimg.cn/originals/2d/8f/91/2d8f91b7f7f7b7f7b7f7b7f7b7f7b7f7.jpg",
     rating: 5,
     text: "I've purchased multiple items, and each one is more beautiful than the last. Highly recommend these crochet creations!"
   },
@@ -95,50 +95,148 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
   addToCart,
   onViewProductDetails
 }) => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <div className="pt-12 md:pt-32">
-      <section className="min-h-[70vh] md:min-h-[80vh] flex flex-col justify-center items-center text-center px-4 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full flex justify-between overflow-hidden opacity-20">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="animate-float"
-              style={{
-                position: 'absolute',
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${5 + Math.random() * 10}s`
-              }}
-            >
-             
-            </div>
-          ))}
-        </div>
+    <div className="pt-12 md:pt-16 relative overflow-hidden bg-gradient-to-br from-pink-50 via-white to-rose-50">
+      {/* Unified Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Large Gradient Orbs */}
+        <div 
+          className="absolute w-[600px] h-[600px] bg-gradient-to-r from-pink-400/20 to-rose-400/20 rounded-full blur-3xl"
+          style={{
+            top: '5%',
+            left: `${15 + mousePosition.x * 0.02}%`,
+            transform: `translate(-50%, -50%)`,
+            animation: 'float 12s ease-in-out infinite'
+          }}
+        />
+        <div 
+          className="absolute w-[500px] h-[500px] bg-gradient-to-r from-purple-400/15 to-pink-400/15 rounded-full blur-3xl"
+          style={{
+            top: '30%',
+            right: `${10 + mousePosition.x * 0.03}%`,
+            transform: `translate(50%, -50%)`,
+            animation: 'float 15s ease-in-out infinite reverse'
+          }}
+        />
+        <div 
+          className="absolute w-[400px] h-[400px] bg-gradient-to-r from-rose-400/18 to-red-400/18 rounded-full blur-3xl"
+          style={{
+            bottom: '10%',
+            left: `${20 + mousePosition.x * 0.04}%`,
+            transform: `translate(-50%, 50%)`,
+            animation: 'float 18s ease-in-out infinite'
+          }}
+        />
         
-        <div className="z-10 max-w-3xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent animate-fadeInUp">
-            Handmade Crochet Creations with Love
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-pink-800 mb-4 md:mb-6 animate-fadeInUp px-2" style={{ animationDelay: "0.2s" }}>
-            Each piece is carefully crafted to bring warmth and joy to your home
-          </p>
-          <div className="animate-fadeInUp" style={{ animationDelay: "0.4s" }}>
-            <button
-              onClick={() => setActiveSection('products')}
-              className="bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-medium transition-all transform hover:scale-105 flex items-center mx-auto"
-            >
-              <ShoppingBag size={16} className="mr-2" />
-              Shop Now
-            </button>
+        {/* Subtle Geometric Patterns */}
+        <div className="absolute top-20 right-20 w-32 h-32 border border-pink-200/20 rounded-full animate-spin-slow" />
+        <div className="absolute bottom-40 left-16 w-24 h-24 border border-rose-300/15 rotate-45 animate-pulse" />
+        <div className="absolute top-1/2 right-1/4 w-28 h-28 border border-pink-300/25 rounded-full animate-spin-slow" style={{ animationDelay: '5s' }} />
+      </div>
+
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center">
+        <div className="container mx-auto px-4 lg:px-6 xl:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center min-h-[80vh]">
+            
+            {/* Left Content */}
+            <div className={`space-y-6 transform transition-all duration-1000 ${isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`}>
+               {/* Main Heading */}
+              <div className="space-y-3">
+                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                  <span className="block bg-gradient-to-r from-pink-600 via-rose-500 to-red-500 bg-clip-text text-transparent">
+                    Artisan Crochet
+                  </span>
+                  <span className="block text-gray-800 mt-1">
+                    Reimagined
+                  </span>
+                </h1>
+                
+                <p className="text-sm md:text-lg text-gray-600 leading-relaxed max-w-lg">
+                  Where traditional craftsmanship meets contemporary design. 
+                  Each piece tells a story of passion, precision, and timeless beauty.
+                </p>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => setActiveSection('products')}
+                  className="group relative bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center"
+                >
+                  <ShoppingBag size={18} className="mr-3" />
+                  Explore Collection
+                  <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300" />
+                </button>
+                
+                <button className="group border-2 border-pink-300 text-pink-600 hover:bg-pink-50 px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center justify-center">
+                  Learn Our Story
+                  <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </div>
+
+            {/* Right Content - Product Showcase */}
+            <div className={`relative flex justify-center lg:justify-end transform transition-all duration-1000 delay-300 ${isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}`}>
+              {/* Main Product Image */}
+              <div className="relative w-full max-w-md">
+                {/* Backdrop Circle */}
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-400/20 to-rose-400/20 rounded-full blur-3xl scale-110" />
+                
+                {/* Product Container */}
+                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-4 shadow-2xl border border-white/50">
+                  <div className="aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-pink-50 to-rose-50">
+                    <img
+                      src="https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg"
+                      alt="Featured Crochet Creation"
+                      className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
+                  
+                  {/* Product Info Overlay */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-white/50">
+                    <h3 className="font-semibold text-gray-800">Handwoven Blanket</h3>
+                    <p className="text-sm text-gray-600">Premium Cotton Yarn</p>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-lg font-bold text-pink-600">Rs 2,500</span>
+                      <button 
+                        onClick={() => setActiveSection('products')}
+                        className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
       
-      {/* Featured Section with Enhanced Mobile Slider - Now with Square Layout on Desktop */}
-      <section className="home-featured-section py-12 md:py-20 px-4 bg-gradient-to-b from-pink-100 to-white relative overflow-hidden">
-       
-        
+      {/* Featured Section */}
+      <section className="home-featured-section py-12 md:py-20 px-4 relative">
         <div className="container mx-auto relative z-10">
           <div className="flex flex-col items-center mb-12">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-4 relative">
@@ -148,7 +246,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-red-400 rounded-full"></div>
           </div>
           
-          {/* Mobile Slider (visible only on mobile) - NO CHANGES HERE */}
+          {/* Mobile Slider (visible only on mobile) */}
           <div className="block md:hidden relative">
             <Swiper
               modules={[Pagination, Navigation, A11y, EffectCoverflow, Autoplay]}
@@ -213,7 +311,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             </div>
           </div>
 
-          {/* Desktop Grid (hidden on mobile) - UPDATED FOR SQUARE CARDS */}
+          {/* Desktop Grid (hidden on mobile) */}
           <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
             {products.slice(0, 3).map((product, index) => (
               <div 
@@ -270,11 +368,8 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
 
-      {/* Enhanced Reviews Section - NO CHANGES HERE */}
-      <section className="home-reviews-section py-12 md:py-20 px-4 bg-gradient-to-b from-white to-pink-50 relative overflow-hidden">
-       
-        
-        
+      {/* Reviews Section */}
+      <section className="home-reviews-section py-12 md:py-20 px-4 relative">
         <div className="container mx-auto relative z-10">
           <div className="flex flex-col items-center mb-12">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-4 relative">
@@ -367,8 +462,8 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         </div>
       </section>
       
-      {/* Add custom styles for pagination */}
-      <style >{`
+      {/* Add custom styles for pagination and animations */}
+      <style>{`
         /* Custom pagination styles */
         .swiper-pagination-bullet {
           width: 10px;
@@ -406,6 +501,36 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
         .swiper-reviews-pagination .swiper-pagination-bullet-active {
           background-color: rgb(236, 72, 153); /* Pink-500 */
           transform: scale(1.2);
+        }
+
+        /* Custom animations */
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-spin-slow {
+          animation: spin 20s linear infinite;
+        }
+
+        /* Glassmorphism effects */
+        .backdrop-blur-sm {
+          backdrop-filter: blur(8px);
         }
       `}</style>
     </div>
