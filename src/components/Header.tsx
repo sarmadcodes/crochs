@@ -34,11 +34,11 @@ export const Header: React.FC<HeaderProps> = ({
   // Announcement slider state
   const [currentAnnouncementIndex, setCurrentAnnouncementIndex] = useState(0);
   const announcements = [
-    "🎉 Welcome to Our Crochet Store!",
-    "✨ Free Shipping on Orders Over 2000PKR",
-    "🧶 abhi ayen abhi payen",
-    "💖 20% Off on Valentine's Special Items",
-    "🌟 Handcrafted with Love Just for You"
+    " Free delivery on prepaid orders",
+    " Free Shipping on Orders Over 2000PKR",
+    " abhi ayen abhi payen",
+    " 20% Off on Valentine's Special Items",
+    " Handcrafted with Love Just for You"
   ];
 
   // Auto-rotate announcements
@@ -209,7 +209,7 @@ export const Header: React.FC<HeaderProps> = ({
       <header
         className={`fixed top-8 w-full transition-all duration-500 z-40 ${
           scrolled 
-            ? "bg-white/25 shadow-lg border-b border-gray-200/30" 
+            ? "bg-white shadow-lg border-b border-gray-200/30" 
             : "bg-white"
         }`}
       >
