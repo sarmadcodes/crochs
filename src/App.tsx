@@ -5,13 +5,13 @@ import { CartNotification } from './components/CartNotification';
 import { HomeSection } from './sections/HomeSection';
 import { ProductsSection } from './sections/ProductsSection';
 import { CartSection } from './sections/CartSection';
-import { CheckoutForm } from './sections/CheckoutForm'; // Import the new CheckoutForm component
+import { CheckoutForm } from './sections/CheckoutForm';
 import { FavoritesSection } from './components/FavoritesSection';
 import { ProductDetailsPage } from './components/ProductDetailsPage';
 import { AdminPanel } from './components/AdminPanel';
 
 import { Product, CartItem } from './types';
-import { products } from './data/products'; // Import products directly
+import { products } from './data/products';
 import './styles/animations.css';
 
 // Define the history state type
@@ -21,13 +21,39 @@ interface HistoryState {
   prevSection?: string;
 }
 
-// New PageUpButton component
+// Loading Screen Component
+const LoadingScreen: React.FC = () => {
+  const [dots, setDots] = useState('');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots(prev => {
+        if (prev === '...') return '';
+        return prev + '.';
+      });
+    }, 300);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 bg-white/20 flex items-center justify-center z-50">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mb-4"></div>
+        <div className="text-pink-700 text-lg font-medium drop-shadow-md">
+          Loading{dots}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Smaller PageUpButton component
 const PageUpButton: React.FC = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show button when page is scrolled down 300px
       setVisible(window.scrollY > 300);
     };
 
@@ -45,14 +71,14 @@ const PageUpButton: React.FC = () => {
   return (
     <button
       onClick={scrollToTop}
-      className={`fixed bottom-6 right-6 bg-pink-600 hover:bg-pink-700 text-white rounded-full p-3 shadow-lg transition-all duration-300 z-50 ${
+      className={`fixed bottom-6 right-6 bg-pink-600 hover:bg-pink-700 text-white rounded-full p-2 shadow-lg transition-all duration-300 z-40 ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12 pointer-events-none'
       }`}
       aria-label="Scroll to top"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
+        className="h-4 w-4"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -68,8 +94,7 @@ const PageUpButton: React.FC = () => {
   );
 };
 
-const CART_STORAGE_KEY = 'crochet_shop_cart';
-const FAVORITES_STORAGE_KEY = 'crochet_shop_favorites';
+
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -77,51 +102,39 @@ const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [cartNotification, setCartNotification] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   
-  // Initialize cart from localStorage
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    try {
-      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-      return savedCart ? JSON.parse(savedCart) : [];
-    } catch (error) {
-      console.error('Error loading cart from localStorage:', error);
-      return [];
-    }
-  });
+  // Initialize cart from localStorage (using React state instead)
+  const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Initialize favorites from localStorage
-  const [favorites, setFavorites] = useState<number[]>(() => {
-    try {
-      const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
-      return savedFavorites ? JSON.parse(savedFavorites) : [];
-    } catch (error) {
-      console.error('Error loading favorites from localStorage:', error);
-      return [];
-    }
-  });
+  // Initialize favorites from localStorage (using React state instead)
+  const [favorites, setFavorites] = useState<number[]>([]);
 
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-    } catch (error) {
-      console.error('Error saving cart to localStorage:', error);
-    }
-  }, [cart]);
+  // Loading function for page transitions
+  const showLoadingAndNavigate = (newSection: string, callback?: () => void) => {
+    setIsLoading(true);
+    
+    // Random loading time between 800ms and 1500ms for realism
+    const loadingTime = Math.random() * 200 + 300;
+    
+    setTimeout(() => {
+      if (callback) {
+        callback();
+      }
+      setActiveSection(newSection);
+      setIsLoading(false);
+    }, loadingTime);
+  };
 
-  // Save favorites to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
-    } catch (error) {
-      console.error('Error saving favorites to localStorage:', error);
-    }
-  }, [favorites]);
+  // Modified navigation functions with loading
+  const navigateToSection = (section: string) => {
+    if (section === activeSection) return;
+    showLoadingAndNavigate(section);
+  };
 
   // Add history state management
   useEffect(() => {
-    // Handle initial load
     const path = window.location.pathname;
     if (path.includes('/product/')) {
       const productId = parseInt(path.split('/product/')[1]);
@@ -146,22 +159,22 @@ const App: React.FC = () => {
       setActiveSection('home');
     }
     
-    // Listen for popstate (back/forward browser buttons)
     const handlePopState = (event: PopStateEvent) => {
       const state = event.state as HistoryState | null;
       
       if (state) {
-        setActiveSection(state.section);
-        if (state.productId) {
-          const product = products.find(p => p.id === state.productId);
-          setSelectedProduct(product || null);
-        } else {
-          setSelectedProduct(null);
-        }
+        showLoadingAndNavigate(state.section, () => {
+          if (state.productId) {
+            const product = products.find(p => p.id === state.productId);
+            setSelectedProduct(product || null);
+          } else {
+            setSelectedProduct(null);
+          }
+        });
       } else {
-        // Default to home if no state
-        setActiveSection('home');
-        setSelectedProduct(null);
+        showLoadingAndNavigate('home', () => {
+          setSelectedProduct(null);
+        });
       }
     };
 
@@ -192,7 +205,6 @@ const App: React.FC = () => {
       title = `${selectedProduct.name} | Crochet Shop`;
       state.productId = selectedProduct.id;
       
-      // Store previous section to go back to
       const currentState = window.history.state as HistoryState | null;
       if (currentState && currentState.section !== 'product-details') {
         state.prevSection = currentState.section;
@@ -205,7 +217,6 @@ const App: React.FC = () => {
       title = 'Admin Setup | Crochet Shop';
     }
 
-    // Only push a new state if we're not handling a popstate event
     const currentState = window.history.state as HistoryState | null;
     if (!currentState || currentState.section !== activeSection) {
       window.history.pushState(state, title, url);
@@ -224,8 +235,10 @@ const App: React.FC = () => {
 
   // Scroll to top when section changes
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [activeSection]);
+    if (!isLoading) {
+      window.scrollTo(0, 0);
+    }
+  }, [activeSection, isLoading]);
 
   const addToCart = (product: Product) => {
     const existingItem = cart.find(item => item.id === product.id);
@@ -282,23 +295,24 @@ const App: React.FC = () => {
   };
 
   const viewProductDetails = (product: Product) => {
-    setSelectedProduct(product);
-    setActiveSection('product-details');
+    showLoadingAndNavigate('product-details', () => {
+      setSelectedProduct(product);
+    });
   };
 
   const goBackToProducts = () => {
-    // Use browser history to go back if available
     const state = window.history.state as HistoryState | null;
     if (state && state.prevSection) {
       window.history.back();
     } else {
-      setActiveSection('products');
-      setSelectedProduct(null);
+      showLoadingAndNavigate('products', () => {
+        setSelectedProduct(null);
+      });
     }
   };
 
   const goToCart = () => {
-    setActiveSection('cart');
+    navigateToSection('cart');
   };
 
   const getTotalItems = () => {
@@ -309,17 +323,20 @@ const App: React.FC = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  // Function to clear the cart after successful order
   const clearCart = () => {
     setCart([]);
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([]));
   };
+
+  // Show loading screen during transitions
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-pink-100">
       <Header
         activeSection={activeSection}
-        setActiveSection={setActiveSection}
+        setActiveSection={navigateToSection}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
         scrolled={scrolled}
@@ -332,7 +349,7 @@ const App: React.FC = () => {
       <main ref={mainRef} className="flex-grow">
         {activeSection === 'home' && (
           <HomeSection 
-            setActiveSection={setActiveSection}
+            setActiveSection={navigateToSection}
             addToCart={addToCart}
             onViewProductDetails={viewProductDetails}
           />
@@ -342,7 +359,7 @@ const App: React.FC = () => {
           <ProductsSection 
             addToCart={addToCart} 
             onViewProductDetails={viewProductDetails}
-            goBack={() => setActiveSection('home')}
+            goBack={() => navigateToSection('home')}
             favorites={favorites}
             toggleFavorite={toggleFavorite}
           />
@@ -362,7 +379,7 @@ const App: React.FC = () => {
         {activeSection === 'cart' && (
           <CartSection 
             cart={cart}
-            setActiveSection={setActiveSection}
+            setActiveSection={navigateToSection}
             updateQuantity={updateQuantity}
             removeFromCart={removeFromCart}
             getTotalItems={getTotalItems}
@@ -374,7 +391,7 @@ const App: React.FC = () => {
           <CheckoutForm
             cart={cart}
             getTotalPrice={getTotalPrice}
-            setActiveSection={setActiveSection}
+            setActiveSection={navigateToSection}
             clearCart={clearCart}
           />
         )}
@@ -383,7 +400,7 @@ const App: React.FC = () => {
           <FavoritesSection 
             favorites={favorites}
             products={products}
-            setActiveSection={setActiveSection}
+            setActiveSection={navigateToSection}
             toggleFavorite={toggleFavorite}
             addToCart={addToCart}
             onViewProductDetails={viewProductDetails}
@@ -391,7 +408,7 @@ const App: React.FC = () => {
         )}
 
         {activeSection === 'admin' && (
-          <AdminPanel setActiveSection={setActiveSection} />
+          <AdminPanel setActiveSection={navigateToSection} />
         )}
         
       </main>
@@ -399,7 +416,7 @@ const App: React.FC = () => {
       <CartNotification 
         show={cartNotification}
         totalItems={getTotalItems()}
-        onViewCart={() => setActiveSection('cart')}
+        onViewCart={() => navigateToSection('cart')}
       />
   
       <Footer />
