@@ -160,7 +160,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             <div className={`space-y-6 transform transition-all duration-1000 ${isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`}>
                {/* Main Heading */}
               <div className="space-y-3">
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                   <span className="block bg-gradient-to-r from-pink-600 via-rose-500 to-red-500 bg-clip-text text-transparent">
                     Artisan Crochet
                   </span>
