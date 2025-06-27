@@ -190,7 +190,7 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
                 </button>
                 
                 <button className="group border-2 border-pink-300 text-pink-600 hover:bg-pink-50 px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:shadow-lg flex items-center justify-center">
-                  Learn Our Story
+                  Custom crochets
                   <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
