@@ -112,6 +112,22 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Get product ID 3 (Flower Coasters)
+  const featuredProduct = products.find(product => product.id === 3);
+
+  const handleProductClick = () => {
+    if (featuredProduct && onViewProductDetails) {
+      onViewProductDetails(featuredProduct);
+    }
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the card click
+    if (featuredProduct && onViewProductDetails) {
+      onViewProductDetails(featuredProduct);
+    }
+  };
+
   return (
     <div className="pt-12 md:pt-16 relative overflow-hidden bg-gradient-to-br from-pink-50 via-white to-rose-50">
       {/* Unified Background Elements */}
@@ -199,31 +215,40 @@ export const HomeSection: React.FC<HomeSectionProps> = ({
             {/* Right Content - Product Showcase */}
             <div className={`relative flex justify-center lg:justify-end transform transition-all duration-1000 delay-300 ${isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}`}>
               {/* Main Product Image */}
-              <div className="relative w-full max-w-md">
+              <div className="relative w-[95%] max-w-md">
                 {/* Backdrop Circle */}
                 <div className="absolute inset-0 bg-gradient-to-br from-pink-400/20 to-rose-400/20 rounded-full blur-3xl scale-110" />
                 
-                {/* Product Container */}
-                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-4 shadow-2xl border border-white/50">
+                {/* Product Container - Make entire card clickable */}
+                <div 
+                  className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-4 shadow-2xl border border-white/50 cursor-pointer hover:shadow-3xl transition-all duration-300 transform hover:scale-105"
+                  onClick={handleProductClick}
+                >
                   <div className="aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-pink-50 to-rose-50">
                     <img
-                      src="https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg"
-                      alt="Featured Crochet Creation"
+                      src={featuredProduct ? featuredProduct.image : "https://i.pinimg.com/736x/8f/85/87/8f8587df52d364a4109a675399eedcc8.jpg"}
+                      alt={featuredProduct ? featuredProduct.name : "Featured Crochet Creation"}
                       className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
                     />
                   </div>
                   
                   {/* Product Info Overlay */}
                   <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-white/50">
-                    <h3 className="font-semibold text-gray-800">Handwoven Blanket</h3>
-                    <p className="text-sm text-gray-600">Premium Cotton Yarn</p>
+                    <h3 className="font-semibold text-gray-800">
+                      {featuredProduct ? featuredProduct.name : "Flower Coasters (Set of 4)"}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {featuredProduct ? featuredProduct.category : "Keychains"}
+                    </p>
                     <div className="flex justify-between items-center mt-2">
-                      <span className="text-lg font-bold text-pink-600">Rs 2,500</span>
+                      <span className="text-lg font-bold text-pink-600">
+                        Rs {featuredProduct ? featuredProduct.price : "5,085"}.00
+                      </span>
                       <button 
-                        onClick={() => setActiveSection('products')}
+                        onClick={handleBuyNow}
                         className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
                       >
-                        View Details
+                        Buy Now
                       </button>
                     </div>
                   </div>
